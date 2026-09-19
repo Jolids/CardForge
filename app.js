@@ -168,10 +168,12 @@
   }
 
   function renderAccount() {
-    if (session && account) {
+    // Supabase session is the source of truth for whether the user is signed in.
+    // Account/credits come from our VPS and may load a moment later.
+    if (session) {
       loginBtn.hidden = true;
       userActions.hidden = false;
-      creditsCount.textContent = String(account.credits ?? 0);
+      creditsCount.textContent = account ? String(account.credits ?? 0) : "…";
     } else {
       loginBtn.hidden = false;
       userActions.hidden = true;
@@ -203,6 +205,72 @@
     }
   }
 
+  function authRedirectInfo() {
+    const url = new URL(location.href);
+    const hash = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
+    return {
+      url,
+      code: url.searchParams.get("code") || "",
+      accessToken: hash.get("access_token") || "",
+      refreshToken: hash.get("refresh_token") || "",
+      error: hash.get("error_description") || url.searchParams.get("error_description") || "",
+      hasAuthParams: Boolean(
+        url.searchParams.get("code") ||
+        hash.get("access_token") ||
+        hash.get("refresh_token") ||
+        hash.get("error") ||
+        url.searchParams.get("error")
+      )
+    };
+  }
+
+  function cleanAuthRedirectUrl() {
+    const url = new URL(location.href);
+    ["code", "error", "error_code", "error_description"].forEach((key) => url.searchParams.delete(key));
+
+    // Auth tokens must not remain in the address bar/history.
+    // Preserve a normal application hash such as #generator, but discard auth fragments.
+    const hash = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
+    const authHashKeys = ["access_token", "refresh_token", "expires_in", "expires_at", "token_type", "type", "error", "error_code", "error_description"];
+    const containsAuthHash = authHashKeys.some((key) => hash.has(key));
+    if (containsAuthHash) url.hash = "";
+
+    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  async function consumeAuthRedirect() {
+    const info = authRedirectInfo();
+    if (info.error) {
+      cleanAuthRedirectUrl();
+      throw new Error(decodeURIComponent(info.error.replace(/\+/g, " ")));
+    }
+
+    // PKCE callback: Supabase redirects with ?code=...
+    if (info.code) {
+      const { data, error } = await sb.auth.exchangeCodeForSession(info.code);
+      if (error) throw error;
+      session = data?.session || null;
+      cleanAuthRedirectUrl();
+      return session;
+    }
+
+    // Implicit/Magic Link callback: Supabase redirects with tokens in URL fragment.
+    // detectSessionInUrl normally handles this automatically, but explicitly setting
+    // the session makes GitHub Pages callbacks deterministic across browsers.
+    if (info.accessToken && info.refreshToken) {
+      const { data, error } = await sb.auth.setSession({
+        access_token: info.accessToken,
+        refresh_token: info.refreshToken,
+      });
+      if (error) throw error;
+      session = data?.session || null;
+      cleanAuthRedirectUrl();
+      return session;
+    }
+
+    return null;
+  }
+
   async function initAuth() {
     if (!authConfigured()) {
       loginBtn.addEventListener("click", () => {
@@ -212,25 +280,50 @@
     }
 
     sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_PUBLISHABLE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "implicit",
+      }
     });
 
-    const { data } = await sb.auth.getSession();
-    session = data?.session || null;
-    await refreshAccount();
-
-    sb.auth.onAuthStateChange((_event, nextSession) => {
+    // Subscribe BEFORE reading the initial session. Supabase can emit SIGNED_IN
+    // while it is processing a Magic Link/OAuth redirect during client initialization.
+    sb.auth.onAuthStateChange((event, nextSession) => {
       session = nextSession || null;
+      renderAccount();
       setTimeout(async () => {
-        await refreshAccount();
-        if (session) closeAuth();
+        if (session) {
+          await refreshAccount();
+          closeAuth();
+          if (event === "SIGNED_IN") showToast("Вход выполнен", "good");
+        } else {
+          account = null;
+          renderAccount();
+        }
       }, 0);
     });
+
+    try {
+      await consumeAuthRedirect();
+    } catch (error) {
+      console.error("Auth redirect error", error);
+      showToast(`Не удалось завершить вход: ${error?.message || "ошибка авторизации"}`, "bad");
+    }
+
+    const { data, error } = await sb.auth.getSession();
+    if (error) console.warn("getSession", error);
+    session = data?.session || session || null;
+    renderAccount();
+    await refreshAccount();
 
     loginBtn.addEventListener("click", openAuth);
     logoutBtn.addEventListener("click", async () => {
       await sb.auth.signOut();
-      session = null; account = null; renderAccount();
+      session = null;
+      account = null;
+      renderAccount();
       showToast("Вы вышли из аккаунта");
     });
 
@@ -244,13 +337,16 @@
       button.disabled = true;
       button.textContent = "Отправляем…";
       const redirectTo = `${location.origin}${location.pathname}`;
-      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo, shouldCreateUser: true } });
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo, shouldCreateUser: true }
+      });
       button.disabled = false;
       button.textContent = "Получить ссылку для входа";
       if (error) {
         msg.textContent = error.message; msg.className = "auth-message error"; msg.hidden = false;
       } else {
-        msg.textContent = "Ссылка отправлена. Откройте письмо на этом устройстве — аккаунт создастся автоматически.";
+        msg.textContent = "Ссылка отправлена. Откройте письмо в этом браузере — после перехода вход завершится автоматически.";
         msg.className = "auth-message"; msg.hidden = false;
       }
     });
@@ -325,7 +421,11 @@
     showError("");
     if (!session) { openAuth(); return; }
     if (!account) await refreshAccount();
-    if (!account || Number(account.credits) < 1) {
+    if (!account) {
+      showError("Вы вошли, но сервер не смог загрузить баланс. Проверьте доступность API и попробуйте ещё раз.");
+      return;
+    }
+    if (Number(account.credits) < 1) {
       showError("Для новой генерации пополните баланс.");
       openBilling();
       return;
