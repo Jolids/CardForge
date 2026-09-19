@@ -7,7 +7,6 @@
   const preview = $("uploadPreview");
   const uploadEmpty = $("uploadEmpty");
   const replacePhoto = $("replacePhoto");
-  const provider = $("provider");
   const resultImage = $("resultImage");
   const resultPlaceholder = $("resultPlaceholder");
   const loadingOverlay = $("loadingOverlay");
@@ -17,17 +16,14 @@
   const againBtn = $("againBtn");
   const resultStage = $("resultStage");
   const apiState = $("apiState");
-  const providerCards = $("providerCards");
-  const modelBadge = $("modelBadge");
   const meta = $("meta");
-
   let lastImage = "";
-  let providersInfo = null;
 
   const presets = {
-    premium: "Создай премиальную рекламную карточку товара. Глубокий тёмный фон, выразительный свет, дорогие материалы, аккуратный подиум, ощущение люксовой предметной съёмки. Товар должен быть главным объектом.",
-    tech: "Сделай технологичную рекламную карточку: тёмный графитовый фон, неоновое свечение, световые линии, глубина, современный футуристичный стиль. Товар крупный и контрастный.",
-    clean: "Сделай чистую минималистичную карточку маркетплейса: светлый объёмный фон, мягкие тени, аккуратная композиция, много воздуха и премиальная студийная подача."
+    premium: "Создай премиальную рекламную карточку товара. Товар крупный и максимально похож на исходное фото. Дорогая предметная съёмка, глубокий благородный фон, мягкий направленный свет, объёмный подиум, аккуратные блики и ощущение люксового бренда. Композиция современная, чистая и продающая.",
+    tech: "Сделай технологичную рекламную карточку товара. Тёмный графитовый фон, неоновое фиолетово-синее свечение, световые линии, объём и глубина. Товар крупный, контрастный и главный. Современный футуристичный e-commerce стиль.",
+    clean: "Сделай чистую минималистичную карточку товара. Светлый объёмный фон, мягкие естественные тени, спокойная премиальная композиция, много воздуха, аккуратный подиум. Товар должен выглядеть как профессиональная студийная съёмка.",
+    lifestyle: "Создай lifestyle-карточку товара в реалистичной красивой сцене. Сохрани сам товар максимально точно, но помести его в подходящее современное окружение. Естественный свет, глубина кадра, детали окружения поддерживают товар и не отвлекают от него."
   };
 
   function showError(message) {
@@ -43,7 +39,10 @@
     const dt = new DataTransfer();
     dt.items.add(file);
     fileInput.files = dt.files;
-    preview.src = URL.createObjectURL(file);
+    if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+    const url = URL.createObjectURL(file);
+    preview.dataset.objectUrl = url;
+    preview.src = url;
     preview.hidden = false;
     uploadEmpty.hidden = true;
     replacePhoto.hidden = false;
@@ -56,54 +55,53 @@
   dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.classList.remove("drag"); setFile(e.dataTransfer.files?.[0]); });
 
   document.querySelectorAll("[data-preset]").forEach((button) => button.addEventListener("click", () => {
+    document.querySelectorAll("[data-preset]").forEach((x) => x.classList.remove("active"));
+    button.classList.add("active");
     $("prompt").value = presets[button.dataset.preset] || "";
   }));
+  $("prompt").value = presets.premium;
 
   $("size").addEventListener("change", () => {
     resultStage.classList.remove("portrait", "square", "story");
     resultStage.classList.add($("size").value);
   });
 
-  async function loadProviders() {
+  async function checkApi() {
     if (!API) {
       apiState.classList.add("bad");
-      apiState.querySelector("span").textContent = "API_BASE_URL не задан";
+      apiState.querySelector("span").textContent = "Сервис не настроен";
       return;
     }
     try {
-      const res = await fetch(`${API}/api/providers`, { cache: "no-store" });
+      const res = await fetch(`${API}/api/health`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      providersInfo = await res.json();
+      const data = await res.json();
+      if (data.generatorReady === false) throw new Error("Генератор не настроен");
+      apiState.classList.remove("bad");
       apiState.classList.add("ok");
-      apiState.querySelector("span").textContent = "API онлайн";
-      providerCards.innerHTML = providersInfo.providers.map((p) =>
-        `<div class="provider-mini ${p.configured ? "on" : "off"}" title="${escapeHtml(p.model)}">${escapeHtml(p.label)} · ${p.configured ? "готов" : "нет ключа"}</div>`
-      ).join("");
-    } catch (e) {
+      apiState.querySelector("span").textContent = "Сервис готов";
+    } catch {
+      apiState.classList.remove("ok");
       apiState.classList.add("bad");
-      apiState.querySelector("span").textContent = "API недоступен";
-      providerCards.innerHTML = `<div class="provider-mini off">Проверь HTTPS/CORS на VPS</div>`;
+      apiState.querySelector("span").textContent = "Сервис недоступен";
     }
   }
-
-  function escapeHtml(v) { return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   async function generate() {
     showError("");
     const file = fileInput.files?.[0];
     if (!file) return showError("Сначала загрузите фотографию товара.");
-    if (!API) return showError("В config.js не задан API_BASE_URL.");
+    if (!API) return showError("Сервис генерации не настроен.");
 
     const body = new FormData();
     body.append("product", file);
-    body.append("provider", provider.value);
     body.append("prompt", $("prompt").value.trim());
     body.append("title", $("title").value.trim());
     body.append("features", $("features").value.trim());
     body.append("size", $("size").value);
 
     generateBtn.disabled = true;
-    generateBtn.innerHTML = "<span>✦</span> Генерация…";
+    generateBtn.innerHTML = "<span>✦</span> Создаём…";
     loadingOverlay.hidden = false;
     resultPlaceholder.hidden = true;
     resultImage.hidden = true;
@@ -116,13 +114,12 @@
       const text = await res.text();
       let data;
       try { data = JSON.parse(text); } catch { data = { error: text || `HTTP ${res.status}` }; }
-      if (!res.ok) throw new Error(data.error || `Ошибка API ${res.status}`);
-      if (!data.image) throw new Error("API не вернул изображение");
+      if (!res.ok) throw new Error(data.error || `Ошибка сервиса ${res.status}`);
+      if (!data.image) throw new Error("Сервис не вернул изображение");
       lastImage = data.image;
       resultImage.src = data.image;
       resultImage.hidden = false;
-      modelBadge.textContent = data.model || data.provider || "AI";
-      meta.textContent = `${data.providerLabel || data.provider} · ${Math.round((data.elapsedMs || 0) / 1000)} сек.`;
+      meta.textContent = data.elapsedMs ? `Готово за ${Math.max(1, Math.round(data.elapsedMs / 1000))} сек.` : "Готово";
       downloadBtn.disabled = false;
       againBtn.disabled = false;
     } catch (e) {
@@ -142,8 +139,10 @@
     const a = document.createElement("a");
     a.href = lastImage;
     a.download = `cardforge-${Date.now()}.${lastImage.startsWith("data:image/jpeg") ? "jpg" : "png"}`;
-    document.body.appendChild(a); a.click(); a.remove();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   });
 
-  loadProviders();
+  checkApi();
 })();

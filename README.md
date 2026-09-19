@@ -1,9 +1,9 @@
 # CardForge frontend — GitHub Pages
 
-Это полностью статический frontend. Node.js на GitHub не нужен.
+Статический frontend без API-ключей.
 
-1. Откройте `config.js` и проверьте адрес API.
-2. Скопируйте СОДЕРЖИМОЕ этой папки в корень GitHub-репозитория.
-3. Settings → Pages → Deploy from a branch → `main` → `/ (root)`.
+1. Скопируйте **содержимое** этой папки в корень GitHub-репозитория.
+2. В `config.js` укажите публичный HTTPS-адрес API.
+3. GitHub → Settings → Pages → Deploy from a branch → `main` → `/ (root)`.
 
-API-ключей в этой папке быть не должно.
+Выбор AI-модели намеренно скрыт от пользователя. Какая модель используется, задаётся только на VPS через `DEFAULT_PROVIDER`.

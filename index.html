@@ -3,48 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0b0717" />
+  <meta name="theme-color" content="#fbfaf7" />
   <meta name="description" content="CardForge AI — генератор карточек товаров для маркетплейсов" />
-  <title>CardForge AI — карточки товаров с AI</title>
+  <title>CardForge AI — карточки товаров из одного фото</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#top"><span class="logo">◇</span><span>CardForge <b>AI</b></span></a>
+    <a class="brand" href="#top" aria-label="CardForge AI">
+      <span class="logo">C</span>
+      <span>CardForge <b>AI</b></span>
+    </a>
     <nav>
+      <a href="#how">Как работает</a>
       <a href="#generator">Генератор</a>
-      <a href="#models">Модели</a>
       <a href="#examples">Примеры</a>
     </nav>
-    <a class="top-cta" href="#generator">Создать карточку →</a>
+    <a class="top-cta" href="#generator">Создать карточку</a>
   </header>
 
   <main id="top">
     <section class="hero">
-      <div class="glow one"></div><div class="glow two"></div>
       <div class="hero-copy">
-        <div class="eyebrow">✦ AI для маркетплейсов</div>
-        <h1>Карточки товаров<br><span>из обычного фото</span></h1>
-        <p>Загрузите товар, выберите нейросеть и опишите результат обычным русским языком. Модель создаст готовую рекламную карточку целиком.</p>
+        <div class="eyebrow">AI-генератор карточек товара</div>
+        <h1>Карточки товаров<br><span>из одного фото</span></h1>
+        <p>Загрузите фотографию товара, опишите идею обычным русским языком — и получите готовую рекламную карточку для маркетплейса.</p>
         <div class="hero-actions">
-          <a class="primary" href="#generator">Попробовать генератор</a>
-          <span class="small-note">Ключи хранятся только на вашем VPS</span>
-        </div>
-        <div class="chips">
-          <span>Gemini</span><span>Grok</span><span>FLUX</span><span>OpenAI</span>
+          <a class="primary" href="#generator">Попробовать бесплатно</a>
+          <span class="hero-note">Без сложных настроек</span>
         </div>
       </div>
-      <div class="hero-art"><img src="./assets/hero-cards.png" alt="Примеры AI-карточек товаров"></div>
+
+      <div class="hero-showcase" aria-label="Примеры карточек товаров">
+        <div class="showcase-glow"></div>
+        <figure class="showcase-card side left"><img src="./assets/demo-card-1.png" alt="Пример карточки товара"></figure>
+        <figure class="showcase-card main"><img src="./assets/demo-card-2.png" alt="Пример карточки товара"></figure>
+        <figure class="showcase-card side right"><img src="./assets/demo-card-3.png" alt="Пример карточки товара"></figure>
+      </div>
     </section>
 
-    <section class="generator-wrap" id="generator">
-      <div class="section-head">
-        <div><div class="kicker">ГЕНЕРАТОР</div><h2>Создайте карточку</h2></div>
-        <div id="apiState" class="api-state"><i></i><span>Проверяем API…</span></div>
+    <div class="ticker" aria-hidden="true">
+      <div>ОДНО ФОТО <span>✦</span> ОПИСАНИЕ СВОИМИ СЛОВАМИ <span>✦</span> ГОТОВАЯ КАРТОЧКА <span>✦</span> БЕЗ ДИЗАЙНЕРА <span>✦</span></div>
+    </div>
+
+    <section class="how" id="how">
+      <div class="section-intro">
+        <div class="kicker">Как это работает</div>
+        <h2>3 шага — и готово</h2>
+        <p>Никаких технических настроек и выбора моделей. Только товар, идея и результат.</p>
+      </div>
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-index">01</span>
+          <div class="step-icon">↑</div>
+          <h3>Загрузите фото товара</h3>
+          <p>Подойдёт обычная фотография с телефона или готовое фото из каталога.</p>
+        </article>
+        <article class="step-card featured">
+          <span class="step-index">02</span>
+          <div class="step-icon">✦</div>
+          <h3>Опишите идею</h3>
+          <p>Напишите по-русски, какой фон, стиль, композицию и настроение вы хотите.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-index">03</span>
+          <div class="step-icon">↓</div>
+          <h3>Скачайте результат</h3>
+          <p>Получите готовую карточку с товаром, дизайном и текстом для маркетплейса.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="generator-section" id="generator">
+      <div class="section-intro compact">
+        <div class="kicker">Генератор</div>
+        <h2>Создайте карточку</h2>
+        <p>Управляйте результатом обычным текстом. Техническую часть сервис возьмёт на себя.</p>
       </div>
 
       <div class="workspace">
         <form id="generatorForm" class="form-panel">
+          <div class="api-row">
+            <strong>Новая карточка</strong>
+            <div id="apiState" class="api-state"><i></i><span>Проверяем сервис…</span></div>
+          </div>
+
           <div class="field-block">
             <div class="label-row"><label>1. Фото товара</label><span>JPG / PNG / WEBP · до 12 МБ</span></div>
             <label id="dropzone" class="dropzone">
@@ -53,40 +96,35 @@
               <div id="uploadEmpty" class="upload-empty">
                 <div class="upload-icon">↑</div>
                 <strong>Перетащите фото сюда</strong>
-                <span>или нажмите для выбора файла</span>
+                <span>или нажмите, чтобы выбрать файл</span>
               </div>
               <button id="replacePhoto" class="replace-photo" type="button" hidden>Заменить фото</button>
             </label>
           </div>
 
           <div class="field-block">
-            <div class="label-row"><label for="provider">2. Нейросеть</label><span id="providerHint">выберите модель</span></div>
-            <select id="provider" class="control">
-              <option value="gemini">Gemini — Nano Banana 2</option>
-              <option value="grok">Grok Imagine Image 2.0</option>
-              <option value="openai">OpenAI — GPT Image 2.5</option>
-              <option value="flux">FLUX.2 Klein 4B</option>
-            </select>
-            <div id="providerCards" class="provider-cards"></div>
+            <div class="label-row"><label>2. Выберите направление</label><span>можно изменить текстом ниже</span></div>
+            <div class="concepts" role="group" aria-label="Стиль карточки">
+              <button type="button" class="concept active" data-preset="premium"><b>Премиум</b><span>дорогая предметная съёмка</span></button>
+              <button type="button" class="concept" data-preset="tech"><b>Технологичный</b><span>неон и глубокий фон</span></button>
+              <button type="button" class="concept" data-preset="clean"><b>Минимализм</b><span>чисто и много воздуха</span></button>
+              <button type="button" class="concept" data-preset="lifestyle"><b>Lifestyle</b><span>товар в живой сцене</span></button>
+            </div>
           </div>
 
           <div class="field-block">
-            <div class="label-row"><label for="prompt">3. Что вы хотите получить?</label><span>главная инструкция для AI</span></div>
-            <textarea id="prompt" class="control textarea prompt" rows="6" maxlength="3500" placeholder="Например: Сделай премиальную карточку. Тёмный графитовый фон, красное неоновое свечение, товар крупно справа на стеклянном подиуме. Заголовок слева, стиль дорогой и технологичный."></textarea>
-            <div class="presets">
-              <button type="button" data-preset="premium">Премиум</button>
-              <button type="button" data-preset="tech">Технологичный</button>
-              <button type="button" data-preset="clean">Минимализм</button>
-            </div>
+            <div class="label-row"><label for="prompt">3. Опишите карточку своими словами</label><span>главная инструкция</span></div>
+            <textarea id="prompt" class="control textarea prompt" rows="7" maxlength="3500" placeholder="Например: Сделай премиальную карточку. Товар крупно справа на стеклянном подиуме. Фон тёмный графитовый, мягкое фиолетовое свечение. Заголовок слева, стиль дорогой и современный."></textarea>
+            <div class="prompt-help">Можно писать обычным русским языком: где поставить товар, какой сделать фон, свет, цвета и расположение текста.</div>
           </div>
 
           <div class="two-col">
             <div class="field-block">
-              <label for="title">4. Заголовок на карточке</label>
+              <label for="title">4. Заголовок</label>
               <input id="title" class="control" maxlength="100" placeholder="Беспроводные наушники">
             </div>
             <div class="field-block">
-              <label for="size">5. Формат</label>
+              <label for="size">Формат</label>
               <select id="size" class="control">
                 <option value="portrait">3:4 — маркетплейс</option>
                 <option value="square">1:1 — каталог</option>
@@ -96,17 +134,20 @@
           </div>
 
           <div class="field-block">
-            <div class="label-row"><label for="features">6. Преимущества</label><span>по одному на строку</span></div>
+            <div class="label-row"><label for="features">5. Преимущества</label><span>по одному на строку</span></div>
             <textarea id="features" class="control textarea" rows="4" maxlength="700" placeholder="Чистый и глубокий звук&#10;До 40 часов работы&#10;Шумоподавление"></textarea>
           </div>
 
           <div id="errorBox" class="message error" hidden></div>
           <button id="generateBtn" class="generate" type="submit"><span>✦</span> Сгенерировать карточку</button>
-          <div class="privacy">API-ключи не отправляются в браузер и хранятся только на вашем сервере.</div>
+          <div class="privacy">Изображение отправляется только на ваш сервер генерации.</div>
         </form>
 
         <aside class="result-panel">
-          <div class="result-head"><div><div class="kicker">РЕЗУЛЬТАТ</div><h3>Готовая карточка</h3></div><span id="modelBadge" class="model-badge">—</span></div>
+          <div class="result-head">
+            <div><div class="kicker">Результат</div><h3>Готовая карточка</h3></div>
+            <span class="result-ready-dot" title="Результат генерации"></span>
+          </div>
           <div id="resultStage" class="result-stage portrait">
             <div id="resultPlaceholder" class="result-placeholder">
               <div class="result-icon">✦</div>
@@ -116,12 +157,12 @@
             <img id="resultImage" alt="Сгенерированная карточка" hidden>
             <div id="loadingOverlay" class="loading-overlay" hidden>
               <div class="spinner"></div>
-              <strong>Нейросеть рисует карточку…</strong>
-              <span>Это может занять от нескольких секунд до пары минут</span>
+              <strong>Создаём вашу карточку…</strong>
+              <span>Обычно это занимает от нескольких секунд до пары минут</span>
             </div>
           </div>
           <div class="result-actions">
-            <button id="downloadBtn" type="button" disabled>↓ Скачать PNG/JPEG</button>
+            <button id="downloadBtn" type="button" disabled>↓ Скачать</button>
             <button id="againBtn" type="button" class="secondary" disabled>↻ Ещё вариант</button>
           </div>
           <div id="meta" class="meta"></div>
@@ -129,23 +170,25 @@
       </div>
     </section>
 
-    <section class="models" id="models">
-      <div class="section-head"><div><div class="kicker">4 ПРОВАЙДЕРА</div><h2>Сравнивайте модели на одном товаре</h2></div></div>
-      <div class="model-grid">
-        <article><b>Google</b><h3>Nano Banana 2</h3><p>Сильное редактирование по исходному фото и хорошая работа с текстом на изображении.</p></article>
-        <article><b>xAI via Cloudflare</b><h3>Grok Imagine 2.0</h3><p>Полезен для рекламных макетов, типографики и сохранения reference image.</p></article>
-        <article><b>OpenAI</b><h3>GPT Image 2.5</h3><p>Высокая точность редактирования исходного товара и следование сложным инструкциям.</p></article>
-        <article><b>Cloudflare</b><h3>FLUX.2 Klein 4B</h3><p>Быстрый вариант для экспериментов и сравнений. Качество текста зависит от задачи.</p></article>
-      </div>
-    </section>
-
     <section class="examples" id="examples">
-      <div class="section-head"><div><div class="kicker">ПРИМЕРЫ</div><h2>Форматы карточек</h2></div></div>
-      <div class="example-grid"><img src="./assets/demo-card-1.png" alt="Пример 1"><img src="./assets/demo-card-2.png" alt="Пример 2"><img src="./assets/demo-card-3.png" alt="Пример 3"></div>
+      <div class="section-intro compact">
+        <div class="kicker">Примеры</div>
+        <h2>Подходит для разных товаров</h2>
+        <p>Меняйте описание и получайте разные стили на основе одной фотографии.</p>
+      </div>
+      <div class="example-grid">
+        <figure><img src="./assets/demo-card-1.png" alt="Пример карточки товара"><figcaption>Светлая студия</figcaption></figure>
+        <figure><img src="./assets/demo-card-2.png" alt="Пример карточки товара"><figcaption>Технологичный стиль</figcaption></figure>
+        <figure><img src="./assets/demo-card-3.png" alt="Пример карточки товара"><figcaption>Lifestyle</figcaption></figure>
+      </div>
     </section>
   </main>
 
-  <footer><div class="brand"><span class="logo">◇</span><span>CardForge <b>AI</b></span></div><span>Frontend: GitHub Pages · AI API: ваш VPS</span></footer>
+  <footer>
+    <div class="brand"><span class="logo">C</span><span>CardForge <b>AI</b></span></div>
+    <span>AI-карточки товаров для маркетплейсов</span>
+  </footer>
+
   <script src="./config.js"></script>
   <script src="./app.js"></script>
 </body>
