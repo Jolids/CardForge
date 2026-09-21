@@ -565,6 +565,46 @@
     window.addEventListener("resize", () => goTo(index)); startAutoplay();
   }
 
+
+  async function loadPublicPackages() {
+    const grid = $("publicPackageGrid");
+    if (!grid) return;
+    try {
+      const res = await fetch(`${API}/api/billing/packages`, { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Не удалось загрузить тарифы");
+      grid.innerHTML = "";
+      for (const pack of data.packages || []) {
+        const card = document.createElement("article");
+        card.className = `public-package-card${pack.popular ? " popular" : ""}`;
+        card.innerHTML = `${pack.popular ? '<span class="public-package-badge">Популярный</span>' : ''}<span class="public-package-name">${pack.title}</span><div class="public-package-credits">${pack.credits}<small> генераций</small></div><div class="public-package-price">${money(pack.amount, pack.currency)}</div><p>${pack.credits <= 10 ? "Для знакомства и первых карточек" : pack.credits < 100 ? "Для регулярной работы с товарами" : "Для магазина и большого каталога"}</p><button type="button">Выбрать пакет</button>`;
+        card.querySelector("button").addEventListener("click", () => {
+          if (!sessionToken) openAuth("register");
+          else openBilling();
+        });
+        grid.appendChild(card);
+      }
+    } catch {
+      grid.innerHTML = '<div class="pricing-loading">Тарифы временно недоступны. Откройте окно покупки после входа.</div>';
+    }
+  }
+
+  function initMobileMenu() {
+    const button = $("mobileMenuBtn");
+    const nav = document.getElementById("mainNav");
+    if (!button || !nav) return;
+    button.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      button.textContent = open ? "×" : "☰";
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+      nav.classList.remove("open");
+      button.textContent = "☰";
+      button.setAttribute("aria-expanded", "false");
+    }));
+  }
+
   async function handlePaymentReturn() {
     const params = new URLSearchParams(location.search);
     const payment = params.get("payment") || params.get("status");
@@ -585,8 +625,10 @@
     renderCategories();
     renderScenes();
     initHeroCarousel();
+    initMobileMenu();
     await checkApi();
     await initAuth();
+    await loadPublicPackages();
     await handlePaymentReturn();
   }
 
