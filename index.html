@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#faf9f6" />
   <meta name="description" content="CardForge AI — генератор карточек товаров для маркетплейсов" />
   <title>CardForge AI — генератор карточек товаров</title>
-  <link rel="stylesheet" href="./styles.css?v=61" />
+  <link rel="stylesheet" href="./styles.css?v=62" />
 </head>
 <body>
   <header class="topbar">
@@ -35,16 +35,16 @@
     <section class="hero section-shell">
       <div class="hero-copy">
         <span class="eyebrow">AI для карточек товаров</span>
-        <h1>Профессиональная карточка <span>из одного фото</span></h1>
-        <p>Загрузите товар и опишите идею обычным русским языком. Сервис сам создаст рекламную композицию, фон и текст.</p>
+        <h1>Загрузите товар и <span>выберите готовую сцену</span></h1>
+        <p>Пользователю не нужно описывать весь кадр. CardForge сам собирает профессиональный промпт, создаёт фон, композицию и аккуратно размещает текст.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#generator">Создать карточку</a>
-          <span>Без дизайнера и сложных настроек</span>
+          <span>Быстрый выбор сцены вместо сложного промпта</span>
         </div>
         <div class="hero-points">
           <span>✓ Фото с телефона</span>
-          <span>✓ Русские промпты</span>
-          <span>✓ Форматы маркетплейсов</span>
+          <span>✓ Готовые сцены</span>
+          <span>✓ Чёткие карточки 3:4</span>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
         <div class="carousel-head">
           <div>
             <span class="carousel-kicker">Примеры работ</span>
-            <strong>Листайте карточки</strong>
+            <strong>Листайте чёткие примеры</strong>
           </div>
           <div class="carousel-head-actions">
             <button class="carousel-button carousel-prev" type="button" aria-label="Предыдущий пример">←</button>
@@ -61,13 +61,12 @@
         </div>
         <div class="hero-carousel" id="heroCarousel">
           <div class="carousel-track">
-            <figure class="carousel-card"><img src="./assets/demo-card-2.png" alt="Технологичная карточка товара"></figure>
-            <figure class="carousel-card"><img src="./assets/example-headphones.jpg" alt="Карточка беспроводных наушников"></figure>
-            <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка смарт-часов"></figure>
-            <figure class="carousel-card"><img src="./assets/example-sneakers.jpg" alt="Карточка кроссовок"></figure>
-            <figure class="carousel-card"><img src="./assets/example-airfryer.jpg" alt="Карточка аэрогриля"></figure>
-            <figure class="carousel-card"><img src="./assets/demo-card-1.png" alt="Премиальная карточка товара"></figure>
-            <figure class="carousel-card"><img src="./assets/demo-card-3.png" alt="Яркая карточка товара"></figure>
+            <figure class="carousel-card"><img src="./assets/example-headphones.jpg" alt="Карточка беспроводных наушников" loading="lazy"></figure>
+            <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка смарт-часов" loading="lazy"></figure>
+            <figure class="carousel-card"><img src="./assets/example-perfume.jpg" alt="Карточка духов" loading="lazy"></figure>
+            <figure class="carousel-card"><img src="./assets/example-sneakers.jpg" alt="Карточка кроссовок" loading="lazy"></figure>
+            <figure class="carousel-card"><img src="./assets/example-airfryer.jpg" alt="Карточка аэрогриля" loading="lazy"></figure>
+            <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка часов в премиальном стиле" loading="lazy"></figure>
           </div>
         </div>
         <div class="carousel-dots" id="heroCarouselDots" aria-label="Навигация по примерам"></div>
@@ -77,13 +76,13 @@
     <section class="how section-shell" id="how">
       <div class="section-heading">
         <span class="eyebrow">Как это работает</span>
-        <h2>Три шага — и готово</h2>
-        <p>Пользователь не выбирает нейросеть и не видит технических настроек.</p>
+        <h2>Не промпт, а понятный сценарий</h2>
+        <p>Как у хорошего конструктора: загрузили фото, выбрали категорию и сцену — остальное сервис делает сам.</p>
       </div>
       <div class="steps">
-        <article><span>01</span><h3>Загрузите товар</h3><p>Обычное фото на белом фоне или снимок с телефона.</p></article>
-        <article><span>02</span><h3>Опишите идею</h3><p>Напишите по-русски, какой фон, стиль, свет и композицию вы хотите.</p></article>
-        <article><span>03</span><h3>Получите карточку</h3><p>Скачайте готовый визуал и при необходимости создайте ещё один вариант.</p></article>
+        <article><span>01</span><h3>Загрузите товар</h3><p>Подойдёт обычное фото на белом фоне или снимок с телефона.</p></article>
+        <article><span>02</span><h3>Выберите сцену</h3><p>Светлая студия, премиум-подиум, lifestyle, техно, натуральная подача и другие готовые стили.</p></article>
+        <article><span>03</span><h3>Получите готовую карточку</h3><p>С чётким фоном, композицией и читаемым текстом для маркетплейса.</p></article>
       </div>
     </section>
 
@@ -91,8 +90,8 @@
       <div class="section-shell">
         <div class="section-heading generator-heading">
           <span class="eyebrow">Генератор</span>
-          <h2>Создайте карточку</h2>
-          <p>Опишите желаемый результат своими словами. После входа первая генерация — бесплатно.</p>
+          <h2>Соберите карточку за пару кликов</h2>
+          <p>Пользователь выбирает результат глазами. Дополнительные пожелания можно написать отдельно, но подробно описывать сцену не нужно.</p>
         </div>
 
         <div class="workspace">
@@ -117,23 +116,19 @@
             </div>
 
             <div class="field-block">
-              <div class="label-row"><label>2. Направление</label><span>быстрый старт</span></div>
-              <div class="concepts" role="group" aria-label="Направление дизайна">
-                <button type="button" class="concept active" data-preset="premium"><b>Премиум</b><small>дорогая предметная съёмка</small></button>
-                <button type="button" class="concept" data-preset="tech"><b>Технологичный</b><small>неон и глубина</small></button>
-                <button type="button" class="concept" data-preset="clean"><b>Минимализм</b><small>чистая композиция</small></button>
-                <button type="button" class="concept" data-preset="lifestyle"><b>Lifestyle</b><small>товар в живой сцене</small></button>
-              </div>
+              <div class="label-row"><label>2. Категория товара</label><span>нужно для подбора сцен</span></div>
+              <div id="categoryGrid" class="category-grid" role="radiogroup" aria-label="Категория товара"></div>
             </div>
 
             <div class="field-block">
-              <div class="label-row"><label for="prompt">3. Что вы хотите получить?</label><span>можно писать по-русски</span></div>
-              <textarea id="prompt" class="control textarea prompt" rows="7" maxlength="3500" placeholder="Например: Сделай премиальную карточку. Наушники крупно справа на стеклянном подиуме. Фон тёмный, фиолетовое неоновое свечение. Заголовок слева, общий стиль дорогой и технологичный."></textarea>
+              <div class="label-row"><label>3. Готовая сцена</label><span>выберите понравившийся стиль</span></div>
+              <div id="sceneGrid" class="scene-grid" role="radiogroup" aria-label="Готовые сцены"></div>
+              <p id="sceneHint" class="helper-note">CardForge сам подставит профессиональный промпт для выбранной сцены.</p>
             </div>
 
             <div class="two-col">
               <div class="field-block">
-                <label for="title">4. Заголовок</label>
+                <label for="title">4. Название товара</label>
                 <input id="title" class="control" maxlength="100" placeholder="Беспроводные наушники">
               </div>
               <div class="field-block">
@@ -151,6 +146,11 @@
               <textarea id="features" class="control textarea" rows="4" maxlength="700" placeholder="Чистый и глубокий звук&#10;До 40 часов работы&#10;Шумоподавление"></textarea>
             </div>
 
+            <div class="field-block">
+              <div class="label-row"><label for="notes">6. Дополнительные пожелания</label><span>необязательно</span></div>
+              <textarea id="notes" class="control textarea" rows="4" maxlength="1200" placeholder="Например: сделай фон немного темнее, добавь больше воздуха слева, заголовок крупнее."></textarea>
+            </div>
+
             <div id="errorBox" class="message error" hidden></div>
             <button id="generateBtn" class="generate" type="submit"><span>✦</span> Сгенерировать · 1 кредит</button>
           </form>
@@ -163,7 +163,7 @@
               <div id="resultPlaceholder" class="result-placeholder">
                 <div class="result-icon">✦</div>
                 <strong>Результат появится здесь</strong>
-                <span>Загрузите фото и задайте описание</span>
+                <span>Загрузите товар и выберите готовую сцену</span>
               </div>
               <img id="resultImage" alt="Сгенерированная карточка" hidden>
               <div id="loadingOverlay" class="loading-overlay" hidden>
@@ -189,12 +189,15 @@
     <section class="examples section-shell" id="examples">
       <div class="section-heading">
         <span class="eyebrow">Примеры</span>
-        <h2>Один товар — разные подачи</h2>
+        <h2>Готовые сцены для разных товаров</h2>
+        <p>Все примеры ниже — в хорошем разрешении и ближе к тому, что пользователь хочет увидеть сразу на сайте.</p>
       </div>
-      <div class="example-grid">
-        <figure><img src="./assets/demo-card-1.png" alt="Пример карточки"><figcaption>Премиальная подача</figcaption></figure>
-        <figure><img src="./assets/demo-card-2.png" alt="Пример карточки"><figcaption>Технологичный стиль</figcaption></figure>
-        <figure><img src="./assets/demo-card-3.png" alt="Пример карточки"><figcaption>Яркая композиция</figcaption></figure>
+      <div class="example-grid wide-grid">
+        <figure><img src="./assets/example-headphones.jpg" alt="Пример карточки наушников" loading="lazy"><figcaption>Технологичная подача</figcaption></figure>
+        <figure><img src="./assets/example-watch.jpg" alt="Пример карточки часов" loading="lazy"><figcaption>Премиум-подиум</figcaption></figure>
+        <figure><img src="./assets/example-perfume.jpg" alt="Пример карточки духов" loading="lazy"><figcaption>Beauty / натуральная сцена</figcaption></figure>
+        <figure><img src="./assets/example-sneakers.jpg" alt="Пример карточки кроссовок" loading="lazy"><figcaption>Fashion / lifestyle</figcaption></figure>
+        <figure><img src="./assets/example-airfryer.jpg" alt="Пример карточки аэрогриля" loading="lazy"><figcaption>Дом / кухня</figcaption></figure>
       </div>
     </section>
   </main>
@@ -203,7 +206,6 @@
     <a class="brand" href="#top"><span class="brand-mark">C</span><span>CardForge <b>AI</b></span></a>
     <span>AI-генератор карточек товаров</span>
   </footer>
-
 
   <div id="authModal" class="modal" hidden>
     <div class="modal-backdrop" data-close-modal="auth"></div>
@@ -221,7 +223,7 @@
       <label id="confirmField" class="auth-field" hidden><span>Повторите пароль</span><input id="authPasswordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Повторите пароль"></label>
       <button id="authSubmitBtn" class="generate" type="button">Войти</button>
       <div id="authMessage" class="auth-message" hidden></div>
-      <small>Пароль хранится на вашем сервере только в виде защищённого хэша. Восстановление пароля по email добавим отдельным этапом.</small>
+      <small>Пароль хранится на вашем сервере только в виде защищённого хэша. Восстановление пароля по email можно добавить следующим этапом.</small>
     </section>
   </div>
 
@@ -240,7 +242,7 @@
 
   <div id="siteToast" class="site-toast" hidden></div>
 
-  <script src="./config.js?v=61"></script>
-  <script src="./app.js?v=61"></script>
+  <script src="./config.js?v=62"></script>
+  <script src="./app.js?v=62"></script>
 </body>
 </html>

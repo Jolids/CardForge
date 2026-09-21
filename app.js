@@ -1,50 +1,166 @@
 (() => {
-  const CFG = window.CARDFORGE_CONFIG || {};
-  const API = String(CFG.API_BASE_URL || "").replace(/\/$/, "");
-  const TOKEN_KEY = "cardforge_session_v1";
-  const $ = (id) => document.getElementById(id);
+  const cfg = window.CARDFORGE_CONFIG || {};
+  const API = String(cfg.API_BASE_URL || "").replace(/\/$/, "");
+  const TOKEN_KEY = "cardforge_local_token";
 
+  const $ = (id) => document.getElementById(id);
   const form = $("generatorForm");
   const fileInput = $("product");
   const dropzone = $("dropzone");
   const preview = $("uploadPreview");
   const uploadEmpty = $("uploadEmpty");
   const replacePhoto = $("replacePhoto");
-  const resultImage = $("resultImage");
-  const resultPlaceholder = $("resultPlaceholder");
-  const loadingOverlay = $("loadingOverlay");
-  const generateBtn = $("generateBtn");
   const errorBox = $("errorBox");
+  const apiState = $("apiState");
+  const generateBtn = $("generateBtn");
+  const resultStage = $("resultStage");
+  const resultPlaceholder = $("resultPlaceholder");
+  const resultImage = $("resultImage");
+  const loadingOverlay = $("loadingOverlay");
   const downloadBtn = $("downloadBtn");
   const againBtn = $("againBtn");
-  const resultStage = $("resultStage");
-  const apiState = $("apiState");
   const meta = $("meta");
-  const authModal = $("authModal");
-  const billingModal = $("billingModal");
+  const postGeneratePaywall = $("postGeneratePaywall");
+  const sceneHint = $("sceneHint");
+
   const loginBtn = $("loginBtn");
   const userActions = $("userActions");
   const creditsCount = $("creditsCount");
-  const balanceBtn = $("balanceBtn");
-  const buyCreditsBtn = $("buyCreditsBtn");
   const logoutBtn = $("logoutBtn");
+  const buyCreditsBtn = $("buyCreditsBtn");
+  const balanceBtn = $("balanceBtn");
   const paywallBuyBtn = $("paywallBuyBtn");
-  const postGeneratePaywall = $("postGeneratePaywall");
+  const authModal = $("authModal");
+  const billingModal = $("billingModal");
   const siteToast = $("siteToast");
 
-  let lastImage = "";
+  const categoryGrid = $("categoryGrid");
+  const sceneGrid = $("sceneGrid");
+
   let previewUrl = "";
+  let lastImage = "";
   let sessionToken = localStorage.getItem(TOKEN_KEY) || "";
   let account = null;
-  let toastTimer = null;
   let authMode = "login";
+  let toastTimer = null;
+  let selectedCategory = "electronics";
+  let selectedScene = "auto";
 
-  const presets = {
-    premium: "Создай премиальную рекламную карточку товара. Сделай выразительную предметную композицию, дорогой свет, глубину, аккуратный подиум и визуал уровня профессиональной рекламной съёмки. Товар должен оставаться главным объектом.",
-    tech: "Сделай технологичную рекламную карточку товара. Используй глубокий тёмный фон, неоновое свечение, световые акценты и современную футуристичную композицию. Товар должен быть крупным и хорошо читаемым.",
-    clean: "Сделай чистую минималистичную карточку маркетплейса. Светлый объёмный фон, мягкие тени, много воздуха, аккуратная композиция и премиальная студийная подача.",
-    lifestyle: "Помести товар в реалистичную lifestyle-сцену, подходящую его назначению. Сохрани сам товар узнаваемым и сделай рекламный визуал естественным, современным и привлекательным."
+  const categories = [
+    { id: "electronics", label: "Электроника", icon: "⚡", hint: "гаджеты, наушники, часы" },
+    { id: "beauty", label: "Косметика", icon: "✨", hint: "духи, кремы, beauty" },
+    { id: "fashion", label: "Одежда", icon: "👟", hint: "обувь, аксессуары" },
+    { id: "home", label: "Дом", icon: "🏠", hint: "техника, кухня, интерьер" },
+    { id: "food", label: "Еда", icon: "🍽", hint: "напитки, упаковка, снеки" },
+    { id: "other", label: "Другое", icon: "◌", hint: "универсальная категория" }
+  ];
+
+  const scenes = {
+    auto: {
+      label: "Авто",
+      subtitle: "CardForge подберёт лучший стиль сам",
+      image: "./assets/example-watch.jpg",
+      hint: "Сервис сам выберет наиболее подходящую сцену под категорию товара.",
+      categories: ["electronics", "beauty", "fashion", "home", "food", "other"]
+    },
+    light_studio: {
+      label: "Светлая студия",
+      subtitle: "чистый фон, воздух, мягкий свет",
+      image: "./assets/example-perfume.jpg",
+      hint: "Подходит для чистой, понятной и аккуратной карточки товара без перегруза.",
+      categories: ["electronics", "beauty", "home", "food", "other"]
+    },
+    premium_podium: {
+      label: "Премиум-подиум",
+      subtitle: "дорогая рекламная подача",
+      image: "./assets/example-watch.jpg",
+      hint: "Добавляет ощущение премиальности: подиум, объём, акцентный свет, красивый фон.",
+      categories: ["electronics", "beauty", "fashion", "other"]
+    },
+    tech_glow: {
+      label: "Технологичный",
+      subtitle: "неон, глубина, современный tech look",
+      image: "./assets/example-headphones.jpg",
+      hint: "Лучше всего для электроники, гаджетов и премиальных устройств.",
+      categories: ["electronics", "other"]
+    },
+    lifestyle: {
+      label: "Lifestyle",
+      subtitle: "реальная живая сцена",
+      image: "./assets/example-sneakers.jpg",
+      hint: "Подходит, когда нужно показать товар в использовании или в реалистичной среде.",
+      categories: ["fashion", "home", "beauty", "other"]
+    },
+    natural_eco: {
+      label: "Натуральная",
+      subtitle: "эко, freshness, спокойные материалы",
+      image: "./assets/example-perfume.jpg",
+      hint: "Идеальна для косметики, ухода, eco-брендов и натуральных продуктов.",
+      categories: ["beauty", "food", "home", "other"]
+    },
+    warm_kitchen: {
+      label: "Тёплая кухня",
+      subtitle: "уютный food / home стиль",
+      image: "./assets/example-airfryer.jpg",
+      hint: "Подходит для кухни, дома, бытовой техники, посуды и продуктов питания.",
+      categories: ["home", "food", "other"]
+    },
+    sales_infographic: {
+      label: "Инфографика",
+      subtitle: "чистые блоки под преимущества",
+      image: "./assets/example-headphones.jpg",
+      hint: "Хороша для маркетплейсов, когда важно подчеркнуть свойства и преимущества товара.",
+      categories: ["electronics", "beauty", "home", "food", "other"]
+    }
   };
+
+  function availableScenes(categoryId) {
+    return Object.entries(scenes)
+      .filter(([, scene]) => scene.categories.includes(categoryId))
+      .map(([id, scene]) => ({ id, ...scene }));
+  }
+
+  function renderCategories() {
+    categoryGrid.innerHTML = "";
+    categories.forEach((item) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `category-chip${item.id === selectedCategory ? " active" : ""}`;
+      button.setAttribute("role", "radio");
+      button.setAttribute("aria-checked", item.id === selectedCategory ? "true" : "false");
+      button.innerHTML = `<span class="category-icon">${item.icon}</span><span><b>${item.label}</b><small>${item.hint}</small></span>`;
+      button.addEventListener("click", () => {
+        selectedCategory = item.id;
+        const scenesForCategory = availableScenes(selectedCategory);
+        if (!scenesForCategory.some((scene) => scene.id === selectedScene)) selectedScene = "auto";
+        renderCategories();
+        renderScenes();
+      });
+      categoryGrid.appendChild(button);
+    });
+  }
+
+  function renderScenes() {
+    const list = availableScenes(selectedCategory);
+    sceneGrid.innerHTML = "";
+    list.forEach((scene) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `scene-card${scene.id === selectedScene ? " active" : ""}`;
+      button.setAttribute("role", "radio");
+      button.setAttribute("aria-checked", scene.id === selectedScene ? "true" : "false");
+      button.innerHTML = `
+        <span class="scene-preview"><img src="${scene.image}" alt="${scene.label}" loading="lazy"></span>
+        <span class="scene-copy"><b>${scene.label}</b><small>${scene.subtitle}</small></span>
+      `;
+      button.addEventListener("click", () => {
+        selectedScene = scene.id;
+        renderScenes();
+      });
+      sceneGrid.appendChild(button);
+    });
+    sceneHint.textContent = scenes[selectedScene]?.hint || "CardForge сам подставит профессиональный промпт для выбранной сцены.";
+  }
 
   function showError(message) {
     errorBox.textContent = message || "";
@@ -121,14 +237,6 @@
   dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag"); });
   dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag"));
   dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.classList.remove("drag"); setFile(e.dataTransfer.files?.[0]); });
-
-  document.querySelectorAll("[data-preset]").forEach((button) => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll("[data-preset]").forEach((b) => b.classList.remove("active"));
-      button.classList.add("active");
-      $("prompt").value = presets[button.dataset.preset] || "";
-    });
-  });
 
   $("size").addEventListener("change", () => {
     resultStage.classList.remove("portrait", "square", "story");
@@ -354,7 +462,9 @@
 
     const body = new FormData();
     body.append("product", file);
-    body.append("prompt", $("prompt").value.trim());
+    body.append("category", selectedCategory);
+    body.append("scene", selectedScene);
+    body.append("prompt", $("notes").value.trim());
     body.append("title", $("title").value.trim());
     body.append("features", $("features").value.trim());
     body.append("size", $("size").value);
@@ -472,6 +582,8 @@
   }
 
   async function boot() {
+    renderCategories();
+    renderScenes();
     initHeroCarousel();
     await checkApi();
     await initAuth();
