@@ -1,7 +1,23 @@
-# Frontend — GitHub Pages
+# CardForge frontend v6
 
-1. Заполните `config.js` (API URL + Supabase URL + publishable key).
-2. Загрузите содержимое этой папки в корень `Jolids/CardForge`.
-3. В Supabase Auth добавьте `https://jolids.github.io/CardForge/` как Site URL и Redirect URL.
+Статический frontend для GitHub Pages. Supabase больше не нужен.
 
-Frontend не содержит Lava/AI секретов. Авторизация хранится в Supabase session, а VPS получает access token в `Authorization: Bearer ...`.
+`config.js`:
+
+```js
+window.CARDFORGE_CONFIG = {
+  API_BASE_URL: "https://31.76.56.162"
+};
+```
+
+Загрузите содержимое этой папки в корень репозитория `Jolids/CardForge`.
+
+Авторизация идёт напрямую на VPS:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+```
+
+Frontend не содержит Lava/AI секретов и не содержит password hash.

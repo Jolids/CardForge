@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#faf9f6" />
   <meta name="description" content="CardForge AI — генератор карточек товаров для маркетплейсов" />
   <title>CardForge AI — генератор карточек товаров</title>
-  <link rel="stylesheet" href="./styles.css?v=51" />
+  <link rel="stylesheet" href="./styles.css?v=6" />
 </head>
 <body>
   <header class="topbar">
@@ -210,14 +210,18 @@
     <section class="modal-card auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <button class="modal-close" type="button" data-close-modal="auth" aria-label="Закрыть">×</button>
       <span class="eyebrow">Аккаунт CardForge</span>
-      <h2 id="authTitle">Войдите и получите 1 генерацию бесплатно</h2>
-      <p>Без пароля: мы отправим безопасную ссылку на вашу почту. Google-вход можно включить в Supabase дополнительно.</p>
-      <button id="googleLoginBtn" class="oauth-button" type="button"><span>G</span> Продолжить с Google</button>
-      <div class="auth-separator"><span>или</span></div>
+      <div class="auth-tabs" role="tablist" aria-label="Авторизация">
+        <button type="button" class="auth-tab active" data-auth-mode="login">Войти</button>
+        <button type="button" class="auth-tab" data-auth-mode="register">Регистрация</button>
+      </div>
+      <h2 id="authTitle">Войти в CardForge</h2>
+      <p id="authLead">Введите email и пароль. Письма и сторонние сервисы для входа не нужны.</p>
       <label class="auth-field"><span>Email</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
-      <button id="sendMagicBtn" class="generate" type="button">Получить ссылку для входа</button>
+      <label class="auth-field"><span>Пароль</span><input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Минимум 8 символов"></label>
+      <label id="confirmField" class="auth-field" hidden><span>Повторите пароль</span><input id="authPasswordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Повторите пароль"></label>
+      <button id="authSubmitBtn" class="generate" type="button">Войти</button>
       <div id="authMessage" class="auth-message" hidden></div>
-      <small>Продолжая, вы соглашаетесь с обработкой данных для работы аккаунта и оплаты.</small>
+      <small>Пароль хранится на вашем сервере только в виде защищённого хэша. Восстановление пароля по email добавим отдельным этапом.</small>
     </section>
   </div>
 
@@ -236,8 +240,7 @@
 
   <div id="siteToast" class="site-toast" hidden></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./config.js?v=51"></script>
-  <script src="./app.js?v=51"></script>
+  <script src="./config.js?v=6"></script>
+  <script src="./app.js?v=6"></script>
 </body>
 </html>

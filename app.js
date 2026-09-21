@@ -1,6 +1,7 @@
 (() => {
   const CFG = window.CARDFORGE_CONFIG || {};
   const API = String(CFG.API_BASE_URL || "").replace(/\/$/, "");
+  const TOKEN_KEY = "cardforge_session_v1";
   const $ = (id) => document.getElementById(id);
 
   const form = $("generatorForm");
@@ -33,10 +34,10 @@
 
   let lastImage = "";
   let previewUrl = "";
-  let sb = null;
-  let session = null;
+  let sessionToken = localStorage.getItem(TOKEN_KEY) || "";
   let account = null;
   let toastTimer = null;
+  let authMode = "login";
 
   const presets = {
     premium: "Создай премиальную рекламную карточку товара. Сделай выразительную предметную композицию, дорогой свет, глубину, аккуратный подиум и визуал уровня профессиональной рекламной съёмки. Товар должен оставаться главным объектом.",
@@ -65,15 +66,28 @@
     document.body.style.overflow = open ? "hidden" : "";
   }
 
-  function openAuth() {
-    const msg = $("authMessage");
-    msg.hidden = true;
+  function setAuthMode(mode) {
+    authMode = mode === "register" ? "register" : "login";
+    document.querySelectorAll("[data-auth-mode]").forEach((button) => {
+      button.classList.toggle("active", button.dataset.authMode === authMode);
+    });
+    $("authTitle").textContent = authMode === "register" ? "Создать аккаунт" : "Войти в CardForge";
+    $("authLead").textContent = authMode === "register"
+      ? "Регистрация занимает несколько секунд. Новый аккаунт получает 1 бесплатную генерацию."
+      : "Введите email и пароль. Письма и сторонние сервисы для входа не нужны.";
+    $("authSubmitBtn").textContent = authMode === "register" ? "Создать аккаунт" : "Войти";
+    $("confirmField").hidden = authMode !== "register";
+    $("authMessage").hidden = true;
+  }
+
+  function openAuth(mode = "login") {
+    setAuthMode(mode);
     setModal(authModal, true);
     setTimeout(() => $("authEmail")?.focus(), 50);
   }
   function closeAuth() { setModal(authModal, false); }
   function openBilling() {
-    if (!session) return openAuth();
+    if (!sessionToken) return openAuth("login");
     setModal(billingModal, true);
     loadPackages();
   }
@@ -81,6 +95,7 @@
 
   document.querySelectorAll("[data-close-modal='auth']").forEach((el) => el.addEventListener("click", closeAuth));
   document.querySelectorAll("[data-close-modal='billing']").forEach((el) => el.addEventListener("click", closeBilling));
+  document.querySelectorAll("[data-auth-mode]").forEach((el) => el.addEventListener("click", () => setAuthMode(el.dataset.authMode)));
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeAuth(); closeBilling(); }
   });
@@ -141,39 +156,26 @@
     }
   }
 
-  function authConfigured() {
-    return Boolean(
-      CFG.SUPABASE_URL &&
-      !String(CFG.SUPABASE_URL).includes("YOUR_PROJECT") &&
-      CFG.SUPABASE_PUBLISHABLE_KEY &&
-      window.supabase?.createClient
-    );
-  }
-
-  async function accessToken() {
-    if (!sb) return "";
-    const { data } = await sb.auth.getSession();
-    session = data?.session || null;
-    return session?.access_token || "";
+  function saveSession(token) {
+    sessionToken = String(token || "");
+    if (sessionToken) localStorage.setItem(TOKEN_KEY, sessionToken);
+    else localStorage.removeItem(TOKEN_KEY);
   }
 
   async function apiFetch(path, options = {}, auth = false) {
     const headers = new Headers(options.headers || {});
     if (auth) {
-      const token = await accessToken();
-      if (!token) throw Object.assign(new Error("Войдите в аккаунт"), { code: "AUTH_REQUIRED" });
-      headers.set("Authorization", `Bearer ${token}`);
+      if (!sessionToken) throw Object.assign(new Error("Войдите в аккаунт"), { code: "AUTH_REQUIRED" });
+      headers.set("Authorization", `Bearer ${sessionToken}`);
     }
     return fetch(`${API}${path}`, { ...options, headers });
   }
 
   function renderAccount() {
-    // Supabase session is the source of truth for whether the user is signed in.
-    // Account/credits come from our VPS and may load a moment later.
-    if (session) {
+    if (sessionToken && account) {
       loginBtn.hidden = true;
       userActions.hidden = false;
-      creditsCount.textContent = account ? String(account.credits ?? 0) : "…";
+      creditsCount.textContent = String(account.credits ?? 0);
     } else {
       loginBtn.hidden = false;
       userActions.hidden = true;
@@ -183,186 +185,101 @@
   }
 
   async function refreshAccount() {
-    if (!session) {
+    if (!sessionToken) {
       account = null;
       renderAccount();
       return null;
     }
     try {
       const res = await apiFetch("/api/me", { cache: "no-store" }, true);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        saveSession("");
+        account = null;
+        renderAccount();
+        return null;
+      }
       if (!res.ok) throw new Error(data.error || "Не удалось загрузить аккаунт");
       account = data.user || null;
       renderAccount();
       return account;
     } catch (e) {
       console.warn(e);
-      if (e?.message?.includes("Сессия")) {
-        account = null;
-        renderAccount();
-      }
       return null;
     }
   }
 
-  function authRedirectInfo() {
-    const url = new URL(location.href);
-    const hash = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
-    return {
-      url,
-      code: url.searchParams.get("code") || "",
-      accessToken: hash.get("access_token") || "",
-      refreshToken: hash.get("refresh_token") || "",
-      error: hash.get("error_description") || url.searchParams.get("error_description") || "",
-      hasAuthParams: Boolean(
-        url.searchParams.get("code") ||
-        hash.get("access_token") ||
-        hash.get("refresh_token") ||
-        hash.get("error") ||
-        url.searchParams.get("error")
-      )
-    };
-  }
+  async function submitAuth() {
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value;
+    const confirm = $("authPasswordConfirm").value;
+    const msg = $("authMessage");
+    const button = $("authSubmitBtn");
+    msg.hidden = true;
 
-  function cleanAuthRedirectUrl() {
-    const url = new URL(location.href);
-    ["code", "error", "error_code", "error_description"].forEach((key) => url.searchParams.delete(key));
-
-    // Auth tokens must not remain in the address bar/history.
-    // Preserve a normal application hash such as #generator, but discard auth fragments.
-    const hash = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
-    const authHashKeys = ["access_token", "refresh_token", "expires_in", "expires_at", "token_type", "type", "error", "error_code", "error_description"];
-    const containsAuthHash = authHashKeys.some((key) => hash.has(key));
-    if (containsAuthHash) url.hash = "";
-
-    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-  }
-
-  async function consumeAuthRedirect() {
-    const info = authRedirectInfo();
-    if (info.error) {
-      cleanAuthRedirectUrl();
-      throw new Error(decodeURIComponent(info.error.replace(/\+/g, " ")));
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      msg.textContent = "Введите корректный email.";
+      msg.className = "auth-message error";
+      msg.hidden = false;
+      return;
     }
-
-    // PKCE callback: Supabase redirects with ?code=...
-    if (info.code) {
-      const { data, error } = await sb.auth.exchangeCodeForSession(info.code);
-      if (error) throw error;
-      session = data?.session || null;
-      cleanAuthRedirectUrl();
-      return session;
+    if (password.length < 8) {
+      msg.textContent = "Пароль должен содержать минимум 8 символов.";
+      msg.className = "auth-message error";
+      msg.hidden = false;
+      return;
     }
-
-    // Implicit/Magic Link callback: Supabase redirects with tokens in URL fragment.
-    // detectSessionInUrl normally handles this automatically, but explicitly setting
-    // the session makes GitHub Pages callbacks deterministic across browsers.
-    if (info.accessToken && info.refreshToken) {
-      const { data, error } = await sb.auth.setSession({
-        access_token: info.accessToken,
-        refresh_token: info.refreshToken,
-      });
-      if (error) throw error;
-      session = data?.session || null;
-      cleanAuthRedirectUrl();
-      return session;
-    }
-
-    return null;
-  }
-
-  async function initAuth() {
-    if (!authConfigured()) {
-      loginBtn.addEventListener("click", () => {
-        showToast("Сначала укажите SUPABASE_URL и SUPABASE_PUBLISHABLE_KEY в config.js", "bad");
-      });
+    if (authMode === "register" && password !== confirm) {
+      msg.textContent = "Пароли не совпадают.";
+      msg.className = "auth-message error";
+      msg.hidden = false;
       return;
     }
 
-    sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_PUBLISHABLE_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        flowType: "implicit",
-      }
-    });
-
-    // Subscribe BEFORE reading the initial session. Supabase can emit SIGNED_IN
-    // while it is processing a Magic Link/OAuth redirect during client initialization.
-    sb.auth.onAuthStateChange((event, nextSession) => {
-      session = nextSession || null;
-      renderAccount();
-      setTimeout(async () => {
-        if (session) {
-          await refreshAccount();
-          closeAuth();
-          if (event === "SIGNED_IN") showToast("Вход выполнен", "good");
-        } else {
-          account = null;
-          renderAccount();
-        }
-      }, 0);
-    });
-
+    button.disabled = true;
+    button.textContent = authMode === "register" ? "Создаём аккаунт…" : "Входим…";
     try {
-      await consumeAuthRedirect();
-    } catch (error) {
-      console.error("Auth redirect error", error);
-      showToast(`Не удалось завершить вход: ${error?.message || "ошибка авторизации"}`, "bad");
+      const res = await fetch(`${API}/api/auth/${authMode === "register" ? "register" : "login"}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Ошибка авторизации");
+      if (!data.token) throw new Error("Сервер не вернул сессию");
+      saveSession(data.token);
+      account = data.user || null;
+      await refreshAccount();
+      closeAuth();
+      $("authPassword").value = "";
+      $("authPasswordConfirm").value = "";
+      showToast(authMode === "register" ? "Аккаунт создан. Вам начислена 1 бесплатная генерация." : "Вы вошли в аккаунт.", "good");
+    } catch (e) {
+      msg.textContent = e?.message || "Ошибка авторизации";
+      msg.className = "auth-message error";
+      msg.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = authMode === "register" ? "Создать аккаунт" : "Войти";
     }
+  }
 
-    const { data, error } = await sb.auth.getSession();
-    if (error) console.warn("getSession", error);
-    session = data?.session || session || null;
-    renderAccount();
-    await refreshAccount();
-
-    loginBtn.addEventListener("click", openAuth);
+  function initAuth() {
+    loginBtn.addEventListener("click", () => openAuth("login"));
+    $("authSubmitBtn").addEventListener("click", submitAuth);
+    [$("authEmail"), $("authPassword"), $("authPasswordConfirm")].forEach((el) => {
+      el?.addEventListener("keydown", (e) => { if (e.key === "Enter") submitAuth(); });
+    });
     logoutBtn.addEventListener("click", async () => {
-      await sb.auth.signOut();
-      session = null;
+      try { await apiFetch("/api/auth/logout", { method: "POST" }, true); } catch {}
+      saveSession("");
       account = null;
       renderAccount();
       showToast("Вы вышли из аккаунта");
     });
-
-    $("sendMagicBtn").addEventListener("click", async () => {
-      const email = $("authEmail").value.trim();
-      const msg = $("authMessage");
-      if (!/^\S+@\S+\.\S+$/.test(email)) {
-        msg.textContent = "Введите корректный email."; msg.className = "auth-message error"; msg.hidden = false; return;
-      }
-      const button = $("sendMagicBtn");
-      button.disabled = true;
-      button.textContent = "Отправляем…";
-      const redirectTo = `${location.origin}${location.pathname}`;
-      const { error } = await sb.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: redirectTo, shouldCreateUser: true }
-      });
-      button.disabled = false;
-      button.textContent = "Получить ссылку для входа";
-      if (error) {
-        msg.textContent = error.message; msg.className = "auth-message error"; msg.hidden = false;
-      } else {
-        msg.textContent = "Ссылка отправлена. Откройте письмо в этом браузере — после перехода вход завершится автоматически.";
-        msg.className = "auth-message"; msg.hidden = false;
-      }
-    });
-
-    $("googleLoginBtn").addEventListener("click", async () => {
-      const redirectTo = `${location.origin}${location.pathname}`;
-      const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
-      if (error) {
-        const msg = $("authMessage");
-        msg.textContent = `${error.message}. Если Google-вход не нужен, используйте email.`;
-        msg.className = "auth-message error"; msg.hidden = false;
-      }
-    });
+    return refreshAccount();
   }
 
-  loginBtn.addEventListener("click", () => { if (authConfigured() && !sb) showToast("Авторизация загружается…"); });
   balanceBtn.addEventListener("click", openBilling);
   buyCreditsBtn.addEventListener("click", openBilling);
   paywallBuyBtn.addEventListener("click", openBilling);
@@ -391,7 +308,9 @@
       }
     } catch (e) {
       grid.innerHTML = '<div class="packages-loading">Не удалось загрузить тарифы.</div>';
-      msg.textContent = e?.message || "Ошибка тарифов"; msg.className = "auth-message error"; msg.hidden = false;
+      msg.textContent = e?.message || "Ошибка тарифов";
+      msg.className = "auth-message error";
+      msg.hidden = false;
     }
   }
 
@@ -413,19 +332,17 @@
     } catch (e) {
       button.disabled = false;
       button.textContent = "Выбрать";
-      msg.textContent = e?.message || "Ошибка оплаты"; msg.className = "auth-message error"; msg.hidden = false;
+      msg.textContent = e?.message || "Ошибка оплаты";
+      msg.className = "auth-message error";
+      msg.hidden = false;
     }
   }
 
   async function generate() {
     showError("");
-    if (!session) { openAuth(); return; }
+    if (!sessionToken) { openAuth("login"); return; }
     if (!account) await refreshAccount();
-    if (!account) {
-      showError("Вы вошли, но сервер не смог загрузить баланс. Проверьте доступность API и попробуйте ещё раз.");
-      return;
-    }
-    if (Number(account.credits) < 1) {
+    if (!account || Number(account.credits) < 1) {
       showError("Для новой генерации пополните баланс.");
       openBilling();
       return;
@@ -453,13 +370,22 @@
     meta.textContent = "";
 
     try {
-      const token = await accessToken();
-      const res = await fetch(`${API}/api/generate`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body });
+      const res = await fetch(`${API}/api/generate`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${sessionToken}` },
+        body
+      });
       const text = await res.text();
       let data;
       try { data = JSON.parse(text); } catch { data = { error: text || `HTTP ${res.status}` }; }
-      if (res.status === 401) { openAuth(); throw new Error(data.error || "Войдите снова"); }
-      if (res.status === 402 || data.code === "NO_CREDITS") { account = { ...(account || {}), credits: 0 }; renderAccount(); openBilling(); throw new Error("Кредиты закончились"); }
+      if (res.status === 401) {
+        saveSession(""); account = null; renderAccount(); openAuth("login");
+        throw new Error(data.error || "Войдите снова");
+      }
+      if (res.status === 402 || data.code === "NO_CREDITS") {
+        account = { ...(account || {}), credits: 0 };
+        renderAccount(); openBilling(); throw new Error("Кредиты закончились");
+      }
       if (!res.ok) throw new Error(data.error || `Ошибка API ${res.status}`);
       if (!data.image) throw new Error("Сервис не вернул изображение");
 
@@ -537,7 +463,7 @@
     if (payment === "success") {
       showToast("Платёж завершён. Ждём подтверждение Lava.top и обновляем баланс…", "good");
       for (let i = 0; i < 12; i++) {
-        if (!session) break;
+        if (!sessionToken) break;
         await new Promise((r) => setTimeout(r, i === 0 ? 400 : 2000));
         await refreshAccount();
       }
