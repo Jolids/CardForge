@@ -2,6 +2,7 @@
   const cfg = window.CARDFORGE_CONFIG || {};
   const API = String(cfg.API_BASE_URL || "").replace(/\/$/, "");
   const TOKEN_KEY = "cardforge_local_token";
+  const VISITOR_KEY = "cardforge_visitor_id";
 
   const $ = (id) => document.getElementById(id);
   const form = $("generatorForm");
@@ -40,11 +41,18 @@
   let previewUrl = "";
   let lastImage = "";
   let sessionToken = localStorage.getItem(TOKEN_KEY) || "";
+  let visitorId = localStorage.getItem(VISITOR_KEY) || "";
+  if (!visitorId) {
+    visitorId = globalThis.crypto?.randomUUID?.() || `v_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(VISITOR_KEY, visitorId);
+  }
   let account = null;
   let authMode = "login";
   let toastTimer = null;
   let selectedCategory = "electronics";
   let selectedScene = "auto";
+  let pendingGenerateAfterAuth = false;
+  let authSource = "header";
 
   const categories = [
     { id: "electronics", label: "Электроника", icon: "⚡", hint: "гаджеты, наушники, часы" },
@@ -59,58 +67,74 @@
     auto: {
       label: "Авто",
       subtitle: "CardForge подберёт лучший стиль сам",
-      image: "./assets/example-watch.jpg",
-      hint: "Сервис сам выберет наиболее подходящую сцену под категорию товара.",
+      artClass: "scene-art-auto",
+      icon: "✦",
+      hint: "Сервис сам выберет наиболее подходящую подачу под категорию товара.",
       categories: ["electronics", "beauty", "fashion", "home", "food", "other"]
     },
     light_studio: {
       label: "Светлая студия",
-      subtitle: "чистый фон, воздух, мягкий свет",
-      image: "./assets/example-perfume.jpg",
-      hint: "Подходит для чистой, понятной и аккуратной карточки товара без перегруза.",
+      subtitle: "воздух, мягкий свет, чистый фон",
+      artClass: "scene-art-light",
+      icon: "◐",
+      hint: "Чистая и аккуратная карточка без визуального перегруза.",
       categories: ["electronics", "beauty", "home", "food", "other"]
     },
     premium_podium: {
       label: "Премиум-подиум",
       subtitle: "дорогая рекламная подача",
-      image: "./assets/example-watch.jpg",
-      hint: "Добавляет ощущение премиальности: подиум, объём, акцентный свет, красивый фон.",
+      artClass: "scene-art-premium",
+      icon: "◆",
+      hint: "Подиум, объём, акцентный свет и ощущение премиального бренда.",
       categories: ["electronics", "beauty", "fashion", "other"]
     },
     tech_glow: {
       label: "Технологичный",
-      subtitle: "неон, глубина, современный tech look",
-      image: "./assets/example-headphones.jpg",
-      hint: "Лучше всего для электроники, гаджетов и премиальных устройств.",
+      subtitle: "неон, глубина, современный tech",
+      artClass: "scene-art-tech",
+      icon: "⚡",
+      hint: "Для электроники, гаджетов и устройств с современной технологичной подачей.",
       categories: ["electronics", "other"]
     },
     lifestyle: {
       label: "Lifestyle",
-      subtitle: "реальная живая сцена",
-      image: "./assets/example-sneakers.jpg",
-      hint: "Подходит, когда нужно показать товар в использовании или в реалистичной среде.",
+      subtitle: "товар в живой реалистичной сцене",
+      artClass: "scene-art-life",
+      icon: "☀",
+      hint: "Показывает товар в естественной среде и помогает представить его в использовании.",
       categories: ["fashion", "home", "beauty", "other"]
     },
     natural_eco: {
       label: "Натуральная",
-      subtitle: "эко, freshness, спокойные материалы",
-      image: "./assets/example-perfume.jpg",
-      hint: "Идеальна для косметики, ухода, eco-брендов и натуральных продуктов.",
+      subtitle: "эко, вода, камень, природные фактуры",
+      artClass: "scene-art-eco",
+      icon: "❋",
+      hint: "Для косметики, ухода, eco-товаров и натуральной продукции.",
       categories: ["beauty", "food", "home", "other"]
     },
     warm_kitchen: {
       label: "Тёплая кухня",
-      subtitle: "уютный food / home стиль",
-      image: "./assets/example-airfryer.jpg",
-      hint: "Подходит для кухни, дома, бытовой техники, посуды и продуктов питания.",
+      subtitle: "уютная food / home атмосфера",
+      artClass: "scene-art-kitchen",
+      icon: "⌂",
+      hint: "Для кухни, бытовой техники, посуды и продуктов питания.",
       categories: ["home", "food", "other"]
     },
     sales_infographic: {
       label: "Инфографика",
-      subtitle: "чистые блоки под преимущества",
-      image: "./assets/example-headphones.jpg",
-      hint: "Хороша для маркетплейсов, когда важно подчеркнуть свойства и преимущества товара.",
+      subtitle: "акцент на свойствах и выгодах",
+      artClass: "scene-art-info",
+      icon: "T",
+      hint: "Больше чистых зон и блоков для преимуществ товара.",
       categories: ["electronics", "beauty", "home", "food", "other"]
+    },
+    custom: {
+      label: "Свой стиль",
+      subtitle: "свободное описание вашей идеи",
+      artClass: "scene-art-custom",
+      icon: "✎",
+      hint: "Опишите собственную сцену в поле «Свободный стиль» ниже — CardForge сохранит требования к качеству и товару.",
+      categories: ["electronics", "beauty", "fashion", "home", "food", "other"]
     }
   };
 
@@ -135,6 +159,7 @@
         if (!scenesForCategory.some((scene) => scene.id === selectedScene)) selectedScene = "auto";
         renderCategories();
         renderScenes();
+        trackEvent("category_select", { category: selectedCategory });
       });
       categoryGrid.appendChild(button);
     });
@@ -150,16 +175,44 @@
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", scene.id === selectedScene ? "true" : "false");
       button.innerHTML = `
-        <span class="scene-preview"><img src="${scene.image}" alt="${scene.label}" loading="lazy"></span>
+        <span class="scene-preview ${scene.artClass}"><span class="scene-art-icon">${scene.icon}</span><i></i><em></em></span>
         <span class="scene-copy"><b>${scene.label}</b><small>${scene.subtitle}</small></span>
       `;
       button.addEventListener("click", () => {
         selectedScene = scene.id;
         renderScenes();
+        updateCustomStyleField();
+        trackEvent("scene_select", { category: selectedCategory, scene: selectedScene });
       });
       sceneGrid.appendChild(button);
     });
     sceneHint.textContent = scenes[selectedScene]?.hint || "CardForge сам подставит профессиональный промпт для выбранной сцены.";
+  }
+
+  function updateCustomStyleField() {
+    const label = document.querySelector('label[for="notes"]');
+    const notes = $("notes");
+    if (!label || !notes) return;
+    const custom = selectedScene === "custom";
+    label.textContent = custom ? "6. Свободный стиль" : "6. Дополнительные пожелания";
+    notes.placeholder = custom
+      ? "Опишите свой стиль: фон, настроение, цвета, свет, композицию. Например: яркая летняя сцена у бассейна, сочные голубые и жёлтые оттенки, товар крупно в центре."
+      : "Например: фон чуть темнее, больше воздуха слева, заголовок крупнее.";
+    notes.closest(".field-block")?.classList.toggle("custom-style-active", custom);
+  }
+
+  async function trackEvent(eventName, metadata = {}) {
+    if (!API) return;
+    try {
+      const headers = { "Content-Type": "application/json" };
+      if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
+      await fetch(`${API}/api/events`, {
+        method: "POST",
+        headers,
+        keepalive: true,
+        body: JSON.stringify({ eventName, visitorId, ...metadata }),
+      });
+    } catch {}
   }
 
   function showError(message) {
@@ -196,15 +249,24 @@
     $("authMessage").hidden = true;
   }
 
-  function openAuth(mode = "login") {
+  function openAuth(mode = "login", source = "header") {
+    authSource = source;
     setAuthMode(mode);
+    if (source === "generation") {
+      $("authLead").textContent = "Перед первой генерацией создайте аккаунт. Бесплатный запуск резервируется только в момент генерации — это защищает сервис от накруток.";
+    }
     setModal(authModal, true);
+    trackEvent("auth_open", { source });
     setTimeout(() => $("authEmail")?.focus(), 50);
   }
-  function closeAuth() { setModal(authModal, false); }
+  function closeAuth() {
+    pendingGenerateAfterAuth = false;
+    setModal(authModal, false);
+  }
   function openBilling() {
-    if (!sessionToken) return openAuth("login");
+    if (!sessionToken) return openAuth("login", "billing");
     setModal(billingModal, true);
+    trackEvent("billing_open", { source: "balance" });
     loadPackages();
   }
   function closeBilling() { setModal(billingModal, false); }
@@ -279,17 +341,34 @@
     return fetch(`${API}${path}`, { ...options, headers });
   }
 
+  function accountAvailable() {
+    if (!account) return 0;
+    if (Number.isFinite(Number(account.availableGenerations))) return Number(account.availableGenerations);
+    return Number(account.credits || 0) + (account.freeTrialAvailable ? 1 : 0);
+  }
+
+  function updateGenerateButton() {
+    if (!generateBtn || generateBtn.disabled) return;
+    if (!sessionToken || account?.freeTrialAvailable) {
+      generateBtn.innerHTML = "<span>✦</span> Сгенерировать бесплатно";
+    } else {
+      generateBtn.innerHTML = "<span>✦</span> Сгенерировать · 1 кредит";
+    }
+  }
+
   function renderAccount() {
     if (sessionToken && account) {
       loginBtn.hidden = true;
       userActions.hidden = false;
-      creditsCount.textContent = String(account.credits ?? 0);
+      const credits = Number(account.credits || 0);
+      creditsCount.textContent = account.freeTrialAvailable && credits === 0 ? "1 бесплатно" : String(credits);
     } else {
       loginBtn.hidden = false;
       userActions.hidden = true;
       creditsCount.textContent = "0";
       postGeneratePaywall.hidden = true;
     }
+    updateGenerateButton();
   }
 
   async function refreshAccount() {
@@ -350,7 +429,7 @@
       const res = await fetch(`${API}/api/auth/${authMode === "register" ? "register" : "login"}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, visitorId })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Ошибка авторизации");
@@ -358,10 +437,13 @@
       saveSession(data.token);
       account = data.user || null;
       await refreshAccount();
-      closeAuth();
+      const resumeGeneration = pendingGenerateAfterAuth;
+      pendingGenerateAfterAuth = false;
+      setModal(authModal, false);
       $("authPassword").value = "";
       $("authPasswordConfirm").value = "";
-      showToast(authMode === "register" ? "Аккаунт создан. Вам начислена 1 бесплатная генерация." : "Вы вошли в аккаунт.", "good");
+      showToast(authMode === "register" ? "Аккаунт создан. Первая генерация доступна бесплатно." : "Вы вошли в аккаунт.", "good");
+      if (resumeGeneration) setTimeout(() => generate(), 120);
     } catch (e) {
       msg.textContent = e?.message || "Ошибка авторизации";
       msg.className = "auth-message error";
@@ -373,7 +455,7 @@
   }
 
   function initAuth() {
-    loginBtn.addEventListener("click", () => openAuth("login"));
+    loginBtn.addEventListener("click", () => openAuth("login", "header"));
     $("authSubmitBtn").addEventListener("click", submitAuth);
     [$("authEmail"), $("authPassword"), $("authPasswordConfirm")].forEach((el) => {
       el?.addEventListener("keydown", (e) => { if (e.key === "Enter") submitAuth(); });
@@ -448,20 +530,32 @@
 
   async function generate() {
     showError("");
-    if (!sessionToken) { openAuth("login"); return; }
-    if (!account) await refreshAccount();
-    if (!account || Number(account.credits) < 1) {
-      showError("Для новой генерации пополните баланс.");
-      openBilling();
-      return;
-    }
 
     const file = fileInput.files?.[0];
     if (!file) return showError("Сначала загрузите фотографию товара.");
     if (!API) return showError("Сервис генерации не настроен.");
+    if (selectedScene === "custom" && $("notes").value.trim().length < 10) {
+      return showError("Для «Своего стиля» опишите идею хотя бы несколькими словами.");
+    }
+
+    trackEvent("generate_click", { category: selectedCategory, scene: selectedScene });
+
+    if (!sessionToken) {
+      pendingGenerateAfterAuth = true;
+      openAuth("register", "generation");
+      return;
+    }
+
+    if (!account) await refreshAccount();
+    if (!account || accountAvailable() < 1) {
+      showError("Бесплатная генерация уже использована. Для новой карточки пополните баланс.");
+      openBilling();
+      return;
+    }
 
     const body = new FormData();
     body.append("product", file);
+    body.append("visitorId", visitorId);
     body.append("category", selectedCategory);
     body.append("scene", selectedScene);
     body.append("prompt", $("notes").value.trim());
@@ -489,12 +583,13 @@
       let data;
       try { data = JSON.parse(text); } catch { data = { error: text || `HTTP ${res.status}` }; }
       if (res.status === 401) {
-        saveSession(""); account = null; renderAccount(); openAuth("login");
+        saveSession(""); account = null; renderAccount(); pendingGenerateAfterAuth = true; openAuth("login", "generation");
         throw new Error(data.error || "Войдите снова");
       }
-      if (res.status === 402 || data.code === "NO_CREDITS") {
-        account = { ...(account || {}), credits: 0 };
-        renderAccount(); openBilling(); throw new Error("Кредиты закончились");
+      if (res.status === 402 || res.status === 429 || data.code === "NO_CREDITS" || data.code === "TRIAL_LIMIT") {
+        await refreshAccount();
+        openBilling();
+        throw new Error(data.error || "Бесплатная генерация использована. Для продолжения пополните баланс.");
       }
       if (!res.ok) throw new Error(data.error || `Ошибка API ${res.status}`);
       if (!data.image) throw new Error("Сервис не вернул изображение");
@@ -504,10 +599,18 @@
       resultImage.hidden = false;
       downloadBtn.disabled = false;
       againBtn.disabled = false;
-      account = { ...(account || {}), credits: Number(data.credits ?? Math.max(0, Number(account?.credits || 1) - 1)) };
+      account = {
+        ...(account || {}),
+        credits: Number(data.credits ?? account?.credits ?? 0),
+        freeTrialAvailable: Boolean(data.freeTrialAvailable),
+        availableGenerations: Number(data.availableGenerations ?? 0),
+      };
       renderAccount();
-      if (data.elapsedMs) meta.textContent = `Готово за ${Math.max(1, Math.round(data.elapsedMs / 1000))} сек. · Осталось кредитов: ${account.credits}`;
-      if (Number(account.credits) === 0) postGeneratePaywall.hidden = false;
+      if (data.elapsedMs) {
+        const suffix = data.chargeType === "trial" ? "Бесплатная генерация использована" : `Осталось генераций: ${accountAvailable()}`;
+        meta.textContent = `Готово за ${Math.max(1, Math.round(data.elapsedMs / 1000))} сек. · ${suffix}`;
+      }
+      if (accountAvailable() === 0) postGeneratePaywall.hidden = false;
     } catch (e) {
       resultPlaceholder.hidden = false;
       showError(e?.message || "Ошибка генерации");
@@ -515,7 +618,7 @@
     } finally {
       loadingOverlay.hidden = true;
       generateBtn.disabled = false;
-      generateBtn.innerHTML = "<span>✦</span> Сгенерировать · 1 кредит";
+      updateGenerateButton();
     }
   }
 
@@ -579,7 +682,7 @@
         card.className = `public-package-card${pack.popular ? " popular" : ""}`;
         card.innerHTML = `${pack.popular ? '<span class="public-package-badge">Популярный</span>' : ''}<span class="public-package-name">${pack.title}</span><div class="public-package-credits">${pack.credits}<small> генераций</small></div><div class="public-package-price">${money(pack.amount, pack.currency)}</div><p>${pack.credits <= 10 ? "Для знакомства и первых карточек" : pack.credits < 100 ? "Для регулярной работы с товарами" : "Для магазина и большого каталога"}</p><button type="button">Выбрать пакет</button>`;
         card.querySelector("button").addEventListener("click", () => {
-          if (!sessionToken) openAuth("register");
+          if (!sessionToken) openAuth("register", "pricing");
           else openBilling();
         });
         grid.appendChild(card);
@@ -624,8 +727,23 @@
   async function boot() {
     renderCategories();
     renderScenes();
+    updateCustomStyleField();
+    updateGenerateButton();
     initHeroCarousel();
     initMobileMenu();
+    trackEvent("page_view", { source: "landing" });
+    const generator = document.getElementById("generator");
+    if (generator && "IntersectionObserver" in window) {
+      let sent = false;
+      const observer = new IntersectionObserver((entries) => {
+        if (!sent && entries.some((entry) => entry.isIntersecting)) {
+          sent = true;
+          trackEvent("generator_view", { source: "scroll" });
+          observer.disconnect();
+        }
+      }, { threshold: 0.2 });
+      observer.observe(generator);
+    }
     await checkApi();
     await initAuth();
     await loadPublicPackages();

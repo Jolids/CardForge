@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f7f5ff" />
   <meta name="description" content="CardForge AI — продающие карточки товаров для маркетплейсов из одного фото" />
   <title>CardForge AI — продающие карточки для маркетплейсов</title>
-  <link rel="stylesheet" href="./styles.css?v=70" />
+  <link rel="stylesheet" href="./styles.css?v=80" />
 </head>
 <body>
   <div class="page-glow page-glow-one"></div>
@@ -45,25 +45,25 @@
       <div class="hero-copy">
         <div class="hero-badge"><span>✦</span> AI для успешных продаж</div>
         <h1>Соберите карточку <span>для маркетплейсов</span></h1>
-        <p class="hero-lead">Превратите обычное фото товара в красивую, продающую карточку за минуты — без дизайнера, сложных программ и длинных промптов.</p>
+        <p class="hero-lead">Превратите обычное фото товара в красивую, продающую карточку за минуты. Выберите готовую сцену или задайте свой стиль — без дизайнера и сложных программ.</p>
         <div class="hero-actions">
-          <a class="primary-cta" href="#generator">Создать карточку <span>→</span></a>
+          <a class="primary-cta" href="#generator">Создать бесплатно <span>→</span></a>
           <a class="secondary-cta" href="#examples">Посмотреть примеры</a>
         </div>
         <div class="hero-trust">
           <span>✓ Без сложных программ</span>
           <span>✓ Готовые сцены и стили</span>
-          <span>✓ Текст на русском</span>
+          <span>✓ 1-я генерация после регистрации бесплатно</span>
         </div>
       </div>
 
       <div class="hero-visual" aria-label="Примеры карточек CardForge">
         <div class="hero-note note-top">Профессиональные карточки<br>за несколько кликов ↙</div>
         <div class="hero-card-stack">
-          <figure class="product-showcase card-a"><img src="./assets/example-headphones.jpg" alt="Продающая карточка наушников"></figure>
-          <figure class="product-showcase card-b"><img src="./assets/example-perfume.jpg" alt="Продающая карточка парфюма"></figure>
-          <figure class="product-showcase card-c"><img src="./assets/example-watch.jpg" alt="Продающая карточка часов"></figure>
-          <figure class="product-showcase card-d"><img src="./assets/example-airfryer.jpg" alt="Продающая карточка аэрогриля"></figure>
+          <figure class="product-showcase card-a"><img src="./assets/example-headphones.jpg" alt="Продающая карточка наушников"><figcaption>Электроника</figcaption></figure>
+          <figure class="product-showcase card-b"><img src="./assets/example-perfume.jpg" alt="Продающая карточка парфюма"><figcaption>Beauty</figcaption></figure>
+          <figure class="product-showcase card-c"><img src="./assets/example-watch.jpg" alt="Продающая карточка часов"><figcaption>Гаджеты</figcaption></figure>
+          <figure class="product-showcase card-d"><img src="./assets/example-airfryer.jpg" alt="Продающая карточка аэрогриля"><figcaption>Дом</figcaption></figure>
         </div>
         <span class="hero-sparkle sparkle-one">✦</span>
         <span class="hero-sparkle sparkle-two">✦</span>
@@ -77,7 +77,7 @@
       </article>
       <article class="benefit-card">
         <span class="benefit-icon">▣</span>
-        <div><h3>Готовые сцены и стили</h3><p>Выберите подачу глазами — промпт соберём сами.</p></div>
+        <div><h3>Готовые сцены + свой стиль</h3><p>Выберите готовую подачу или свободно опишите свою идею.</p></div>
       </article>
       <article class="benefit-card">
         <span class="benefit-icon">T</span>
@@ -108,7 +108,7 @@
           <span class="step-number">2</span>
           <div class="step-icon">▣</div>
           <h3>Выберите стиль</h3>
-          <p>Студия, премиум, lifestyle, техно, натуральная сцена и другие варианты.</p>
+          <p>Студия, премиум, lifestyle, техно, эко — или полностью свой свободный стиль.</p>
         </article>
         <div class="step-arrow">→</div>
         <article class="step-card">
@@ -170,7 +170,7 @@
         <div class="section-heading generator-heading centered">
           <span class="section-kicker">Создать карточку</span>
           <h2>Соберите карточку для маркетплейсов</h2>
-          <p>Загрузите товар, выберите категорию и сцену. Подробный промпт CardForge подготовит сам.</p>
+          <p>Загрузите товар, выберите категорию и сцену. При первой попытке мы предложим быструю регистрацию и сразу продолжим генерацию.</p>
         </div>
 
         <div class="workspace">
@@ -200,7 +200,7 @@
             </div>
 
             <div class="field-block">
-              <div class="label-row"><label>3. Готовая сцена</label><span>выберите понравившийся стиль</span></div>
+              <div class="label-row"><label>3. Сцена или свой стиль</label><span>готовые варианты + свободный режим</span></div>
               <div id="sceneGrid" class="scene-grid" role="radiogroup" aria-label="Готовые сцены"></div>
               <p id="sceneHint" class="helper-note">CardForge сам подставит профессиональный промпт для выбранной сцены.</p>
             </div>
@@ -231,7 +231,7 @@
             </div>
 
             <div id="errorBox" class="message error" hidden></div>
-            <button id="generateBtn" class="generate" type="submit"><span>✦</span> Сгенерировать · 1 кредит</button>
+            <button id="generateBtn" class="generate" type="submit"><span>✦</span> Сгенерировать бесплатно</button>
           </form>
 
           <aside class="panel result-panel">
@@ -269,7 +269,7 @@
       <div class="section-heading centered">
         <span class="section-kicker">Тарифы</span>
         <h2>Платите только за готовые генерации</h2>
-        <p>Первый кредит — бесплатно после регистрации. Дальше выберите удобный пакет.</p>
+        <p>Первая генерация доступна бесплатно после регистрации и используется только при реальном запуске. Дальше выберите удобный пакет.</p>
       </div>
       <div id="publicPackageGrid" class="public-package-grid">
         <div class="pricing-loading">Загружаем тарифы…</div>
@@ -280,7 +280,7 @@
       <div>
         <span class="section-kicker light">Красивые товары — больше возможностей</span>
         <h2>Сделайте товар заметнее уже сегодня</h2>
-        <p>Загрузите одно фото и получите первую карточку бесплатно.</p>
+        <p>Загрузите одно фото, зарегистрируйтесь при первом запуске и получите первую карточку бесплатно.</p>
       </div>
       <a href="#generator" class="white-cta">Создать карточку →</a>
     </section>
@@ -317,13 +317,13 @@
         <button type="button" class="auth-tab" data-auth-mode="register">Регистрация</button>
       </div>
       <h2 id="authTitle">Войти в CardForge</h2>
-      <p id="authLead">Введите email и пароль. Письма для входа не нужны.</p>
+      <p id="authLead">Введите email и пароль. Письма для входа не нужны. Бесплатная генерация резервируется только при первом реальном запуске.</p>
       <label class="auth-field"><span>Email</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
       <label class="auth-field"><span>Пароль</span><input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Минимум 8 символов"></label>
       <label id="confirmField" class="auth-field" hidden><span>Повторите пароль</span><input id="authPasswordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Повторите пароль"></label>
       <button id="authSubmitBtn" class="generate" type="button">Войти</button>
       <div id="authMessage" class="auth-message" hidden></div>
-      <small>Новый аккаунт получает 1 бесплатный кредит.</small>
+      <small>Новый аккаунт получает одну бесплатную генерацию — она не хранится как кредит и используется только при первом запуске.</small>
     </section>
   </div>
 
@@ -342,7 +342,7 @@
 
   <div id="siteToast" class="site-toast" hidden></div>
 
-  <script src="./config.js?v=70"></script>
-  <script src="./app.js?v=70"></script>
+  <script src="./config.js?v=80"></script>
+  <script src="./app.js?v=80"></script>
 </body>
 </html>
