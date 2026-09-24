@@ -55,12 +55,12 @@
   let authSource = "header";
 
   const categories = [
-    { id: "home", label: "Дом", hint: "посуда, декор, интерьер", image: "./assets/categories/home.jpg" },
-    { id: "electronics", label: "Электроника", hint: "гаджеты, наушники, аксессуары", image: "./assets/categories/electronics.jpg" },
-    { id: "beauty", label: "Косметика", hint: "кремы, духи, beauty-товары", image: "./assets/categories/beauty.jpg" },
-    { id: "fashion", label: "Одежда", hint: "обувь, аксессуары, стиль", image: "./assets/categories/fashion.jpg" },
-    { id: "food", label: "Еда", hint: "напитки, снеки, упаковка", image: "./assets/categories/food.jpg" },
-    { id: "other", label: "Другое", hint: "универсальная категория", image: "./assets/categories/other.jpg" }
+    { id: "home", label: "Дом", hint: "посуда, декор, интерьер", image: "./assets/products/home.png" },
+    { id: "electronics", label: "Электроника", hint: "гаджеты, наушники, аксессуары", image: "./assets/products/electronics.png" },
+    { id: "beauty", label: "Косметика", hint: "кремы, духи, beauty-товары", image: "./assets/products/beauty.png" },
+    { id: "fashion", label: "Мода", hint: "одежда, обувь, аксессуары", image: "./assets/products/fashion.png" },
+    { id: "food", label: "Еда", hint: "напитки, снеки, упаковка", image: "./assets/products/food.png" },
+    { id: "other", label: "Другое", hint: "универсальная категория", image: "./assets/products/other.png" }
   ];
 
   const concepts = {
@@ -105,10 +105,28 @@
     other: { context: "В окружении" }
   };
 
-  function conceptImage(categoryId, conceptId) {
-    if (conceptId === "custom") return "";
-    const fileConcept = conceptId === "context" ? "interior" : conceptId;
-    return `./assets/concepts/${categoryId}-${fileConcept}.jpg`;
+  function productImage(categoryId) {
+    return `./assets/products/${categoryId}.png`;
+  }
+
+  function sceneArtwork(categoryId, conceptId, label) {
+    if (conceptId === "custom") {
+      return `<span class="custom-preview"><span>✦</span></span>`;
+    }
+
+    const product = `<img class="scene-product-image" src="${productImage(categoryId)}" alt="${label}" loading="lazy">`;
+    const common = `scene-art scene-${conceptId} cat-${categoryId}`;
+
+    if (conceptId === "infographic") {
+      return `<span class="${common}"><span class="scene-product">${product}</span><span class="info-stack"><i></i><i></i><i></i></span></span>`;
+    }
+    if (conceptId === "context") {
+      return `<span class="${common}"><span class="context-window"></span><span class="context-surface"></span><span class="scene-product">${product}</span></span>`;
+    }
+    if (conceptId === "composition") {
+      return `<span class="${common}"><span class="decor decor-a"></span><span class="decor decor-b"></span><span class="decor decor-c"></span><span class="scene-product">${product}</span></span>`;
+    }
+    return `<span class="${common}"><span class="scene-product">${product}</span></span>`;
   }
 
   function renderCategories() {
@@ -144,17 +162,10 @@
       button.className = `scene-card${id === selectedScene ? " active" : ""}`;
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", id === selectedScene ? "true" : "false");
-      if (id === "custom") {
-        button.innerHTML = `
-          <span class="custom-preview"><span>✦</span></span>
-          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
-        `;
-      } else {
-        button.innerHTML = `
-          <span class="scene-preview"><img src="${conceptImage(selectedCategory, id)}" alt="${label}" loading="lazy"></span>
-          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
-        `;
-      }
+      button.innerHTML = `
+        ${sceneArtwork(selectedCategory, id, label)}
+        <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+      `;
       button.addEventListener("click", () => {
         selectedScene = id;
         renderScenes();
