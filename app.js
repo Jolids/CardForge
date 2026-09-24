@@ -57,9 +57,9 @@
   const categories = [
     { id: "home", label: "Дом", hint: "посуда, декор, интерьер", image: "./assets/products/home.png" },
     { id: "electronics", label: "Электроника", hint: "гаджеты, наушники, аксессуары", image: "./assets/products/electronics.png" },
-    { id: "beauty", label: "Косметика", hint: "кремы, духи, beauty-товары", image: "./assets/products/beauty.png" },
+    { id: "beauty", label: "Красота", hint: "косметика, парфюмерия, уход", image: "./assets/products/beauty.png" },
     { id: "fashion", label: "Мода", hint: "одежда, обувь, аксессуары", image: "./assets/products/fashion.png" },
-    { id: "food", label: "Еда", hint: "напитки, снеки, упаковка", image: "./assets/products/food.png" },
+    { id: "food", label: "Еда и напитки", hint: "продукты, снеки, напитки", image: "./assets/products/food.png" },
     { id: "other", label: "Другое", hint: "универсальная категория", image: "./assets/products/other.png" }
   ];
 
@@ -105,41 +105,10 @@
     other: { context: "В окружении" }
   };
 
-  function productImage(categoryId) {
-    return `./assets/products/${categoryId}.png`;
-  }
-
-  function scenePreviewImage(categoryId, conceptId) {
-    const electronics = {
-      catalog: "./assets/premium/headphones-clean.png",
-      context: "./assets/premium/headphones-context.png",
-      composition: "./assets/premium/headphones-composition.png",
-      closeup: "./assets/premium/headphones-closeup.png",
-      infographic: "./assets/premium/headphones-card.png"
-    };
-    const categoryShowcase = {
-      home: "./assets/premium/mug-card.png",
-      beauty: "./assets/premium/perfume-card.png",
-      fashion: "./assets/premium/sneakers-card.png"
-    };
-    const generic = {
-      catalog: "./assets/generated/concept-catalog.png",
-      context: "./assets/generated/concept-context.png",
-      composition: "./assets/generated/concept-composition.png",
-      closeup: "./assets/generated/concept-closeup.png",
-      infographic: "./assets/generated/concept-infographic.png"
-    };
-    if (categoryId === "electronics") return electronics[conceptId] || electronics.catalog;
-    if (categoryShowcase[categoryId] && conceptId === "infographic") return categoryShowcase[categoryId];
-    return generic[conceptId] || generic.catalog;
-  }
-
-  function sceneArtwork(categoryId, conceptId, label) {
-    if (conceptId === "custom") {
-      return `<span class="custom-preview"><span>✦</span></span>`;
-    }
-
-    return `<span class="scene-preview scene-preview--photo"><img src="${scenePreviewImage(categoryId, conceptId)}" alt="${label}" loading="lazy"></span>`;
+  function conceptImage(categoryId, conceptId) {
+    if (conceptId === "custom") return "";
+    const fileConcept = conceptId === "context" ? "interior" : conceptId;
+    return `./assets/concepts-v2/${categoryId}-${fileConcept}.jpg`;
   }
 
   function renderCategories() {
@@ -175,10 +144,17 @@
       button.className = `scene-card${id === selectedScene ? " active" : ""}`;
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", id === selectedScene ? "true" : "false");
-      button.innerHTML = `
-        ${sceneArtwork(selectedCategory, id, label)}
-        <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
-      `;
+      if (id === "custom") {
+        button.innerHTML = `
+          <span class="custom-preview"><span>✦</span></span>
+          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+        `;
+      } else {
+        button.innerHTML = `
+          <span class="scene-preview"><img src="${conceptImage(selectedCategory, id)}" alt="${label}" loading="lazy"></span>
+          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+        `;
+      }
       button.addEventListener("click", () => {
         selectedScene = id;
         renderScenes();

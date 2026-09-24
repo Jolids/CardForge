@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f7f8ff" />
   <meta name="description" content="CardForge — AI-карточки товаров для маркетплейсов. Выберите категорию, концепцию и получите готовый продающий визуал." />
   <title>CardForge — AI-карточки товаров для маркетплейсов</title>
-  <link rel="stylesheet" href="./styles.css?v=841" />
+  <link rel="stylesheet" href="./styles.css?v=811" />
 </head>
 <body>
   <header class="topbar">
@@ -38,53 +38,12 @@
   </header>
 
   <main id="top">
-
-    <section class="marketing-hero section-shell" aria-labelledby="heroTitle">
-      <div class="marketing-hero-main">
-        <div class="marketing-copy">
-          <span class="marketing-kicker">✦ AI-карточки товаров для маркетплейсов</span>
-          <h1 id="heroTitle">Соберите карточку<br><span>для маркетплейсов</span></h1>
-          <p>Превратите обычное фото товара в красивую продающую карточку за минуты. Выберите понятную концепцию — CardForge сам соберёт композицию, подчеркнёт преимущества и подготовит визуал для продажи.</p>
-          <div class="marketing-actions">
-            <a class="marketing-primary" href="#generator">Создать карточку <span>→</span></a>
-            <a class="marketing-secondary" href="#examples"><span class="play-dot">▶</span> Посмотреть примеры</a>
-          </div>
-          <div class="marketing-checks">
-            <span>✓ Быстро</span><span>✓ Просто</span><span>✓ Без дизайнера</span>
-          </div>
-        </div>
-
-        <div class="marketing-visual" aria-label="Примеры готовых карточек товаров">
-          <div class="visual-glow"></div>
-          <figure class="visual-card visual-source">
-            <span>Ваше фото</span>
-            <img src="./assets/premium/headphones-clean.png" alt="Исходное фото наушников">
-          </figure>
-          <span class="visual-arrow">→</span>
-          <figure class="visual-card visual-main-card">
-            <span class="visual-label">Готовая карточка</span>
-            <img src="./assets/premium/headphones-card.png" alt="Продающая карточка беспроводных наушников">
-          </figure>
-          <figure class="visual-card visual-perfume"><img src="./assets/premium/perfume-card.png" alt="Карточка парфюма"></figure>
-          <figure class="visual-card visual-mug"><img src="./assets/premium/mug-card.png" alt="Карточка кружки"></figure>
-          <figure class="visual-card visual-shoes"><img src="./assets/premium/sneakers-card.png" alt="Карточка кроссовок"></figure>
-        </div>
-      </div>
-
-      <div class="marketing-benefits">
-        <article><span class="benefit-icon">▣</span><div><b>Понятные концепции</b><small>Каталог, интерьер, композиция, крупный план и инфографика</small></div></article>
-        <article><span class="benefit-icon">✦</span><div><b>Красивый результат</b><small>Карточка выглядит как готовая реклама для маркетплейса</small></div></article>
-        <article><span class="benefit-icon warm">⚡</span><div><b>Экономия времени</b><small>Не нужен дизайнер, фотостудия и сложный промпт</small></div></article>
-        <article><span class="benefit-icon blue">▥</span><div><b>Готово для продаж</b><small>Подходит для Wildberries, Ozon и других площадок</small></div></article>
-      </div>
-    </section>
     <section class="builder-wrap section-shell" id="generator">
       <div class="builder-card">
         <div class="builder-intro">
           <div>
-            <span class="eyebrow">Конструктор карточки</span>
-            <h2 class="builder-title">Создайте карточку для своего товара</h2>
-            <p class="intro-lead">Выберите категорию и подходящий сценарий — дальше CardForge подготовит всё для генерации.</p>
+            <span class="eyebrow">Создайте карточку товара</span>
+            <h1>Один товар — <span>разные продающие сценарии</span></h1>
           </div>
           <div id="apiState" class="api-state"><i></i><span>Проверяем сервис…</span></div>
         </div>
@@ -176,7 +135,7 @@
       <div class="before-after-demo">
         <div class="before-sample"><img src="./assets/categories/home.jpg" alt="Исходное фото кружки"><span>Ваше фото</span></div>
         <span class="demo-arrow">→</span>
-        <div class="after-sample"><img src="./assets/generated/showcase-mug.png" alt="Готовая карточка кружки"><span class="after-caption">Готовая карточка</span></div>
+        <div class="after-sample"><img src="./assets/concepts/home-interior.jpg" alt="Карточка кружки после применения концепции"><div class="after-overlay"><b>СТИЛЬ<br>В ДЕТАЛЯХ</b><small>Для уютных моментов</small></div></div>
       </div>
     </section>
 
@@ -185,11 +144,11 @@
       <div class="hero-showcase">
         <div class="carousel-head"><div><strong>Готовые карточки</strong><span>На телефоне можно свайпать</span></div><div class="carousel-head-actions"><button class="carousel-button carousel-prev" type="button">←</button><button class="carousel-button carousel-next" type="button">→</button></div></div>
         <div class="hero-carousel" id="heroCarousel"><div class="carousel-track">
-          <figure class="carousel-card"><img src="./assets/generated/showcase-headphones.png" alt="Карточка наушников"></figure>
-          <figure class="carousel-card"><img src="./assets/generated/showcase-perfume.png" alt="Карточка парфюма"></figure>
-          <figure class="carousel-card"><img src="./assets/generated/showcase-mug.png" alt="Карточка кружки"></figure>
-          <figure class="carousel-card"><img src="./assets/generated/showcase-sneakers.png" alt="Карточка кроссовок"></figure>
-          <figure class="carousel-card"><img src="./assets/generated/showcase-headphones.png" alt="Карточка товара для дома"></figure>
+          <figure class="carousel-card"><img src="./assets/example-headphones.jpg" alt="Карточка наушников"></figure>
+          <figure class="carousel-card"><img src="./assets/example-perfume.jpg" alt="Карточка парфюма"></figure>
+          <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка часов"></figure>
+          <figure class="carousel-card"><img src="./assets/example-sneakers.jpg" alt="Карточка кроссовок"></figure>
+          <figure class="carousel-card"><img src="./assets/example-airfryer.jpg" alt="Карточка товара для дома"></figure>
         </div></div>
         <div class="carousel-dots" id="heroCarouselDots"></div>
       </div>
@@ -244,7 +203,7 @@
   </div>
 
   <div id="siteToast" class="site-toast" hidden></div>
-  <script src="./config.js?v=841"></script>
-  <script src="./app.js?v=841"></script>
+  <script src="./config.js?v=811"></script>
+  <script src="./app.js?v=811"></script>
 </body>
 </html>
