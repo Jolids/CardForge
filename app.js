@@ -109,24 +109,37 @@
     return `./assets/products/${categoryId}.png`;
   }
 
+  function scenePreviewImage(categoryId, conceptId) {
+    const electronics = {
+      catalog: "./assets/premium/headphones-clean.png",
+      context: "./assets/premium/headphones-context.png",
+      composition: "./assets/premium/headphones-composition.png",
+      closeup: "./assets/premium/headphones-closeup.png",
+      infographic: "./assets/premium/headphones-card.png"
+    };
+    const categoryShowcase = {
+      home: "./assets/premium/mug-card.png",
+      beauty: "./assets/premium/perfume-card.png",
+      fashion: "./assets/premium/sneakers-card.png"
+    };
+    const generic = {
+      catalog: "./assets/generated/concept-catalog.png",
+      context: "./assets/generated/concept-context.png",
+      composition: "./assets/generated/concept-composition.png",
+      closeup: "./assets/generated/concept-closeup.png",
+      infographic: "./assets/generated/concept-infographic.png"
+    };
+    if (categoryId === "electronics") return electronics[conceptId] || electronics.catalog;
+    if (categoryShowcase[categoryId] && conceptId === "infographic") return categoryShowcase[categoryId];
+    return generic[conceptId] || generic.catalog;
+  }
+
   function sceneArtwork(categoryId, conceptId, label) {
     if (conceptId === "custom") {
       return `<span class="custom-preview"><span>✦</span></span>`;
     }
 
-    const product = `<img class="scene-product-image" src="${productImage(categoryId)}" alt="${label}" loading="lazy">`;
-    const common = `scene-art scene-${conceptId} cat-${categoryId}`;
-
-    if (conceptId === "infographic") {
-      return `<span class="${common}"><span class="scene-product">${product}</span><span class="info-stack"><i></i><i></i><i></i></span></span>`;
-    }
-    if (conceptId === "context") {
-      return `<span class="${common}"><span class="context-window"></span><span class="context-surface"></span><span class="scene-product">${product}</span></span>`;
-    }
-    if (conceptId === "composition") {
-      return `<span class="${common}"><span class="decor decor-a"></span><span class="decor decor-b"></span><span class="decor decor-c"></span><span class="scene-product">${product}</span></span>`;
-    }
-    return `<span class="${common}"><span class="scene-product">${product}</span></span>`;
+    return `<span class="scene-preview scene-preview--photo"><img src="${scenePreviewImage(categoryId, conceptId)}" alt="${label}" loading="lazy"></span>`;
   }
 
   function renderCategories() {
