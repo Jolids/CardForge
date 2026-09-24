@@ -49,99 +49,66 @@
   let account = null;
   let authMode = "login";
   let toastTimer = null;
-  let selectedCategory = "electronics";
-  let selectedScene = "auto";
+  let selectedCategory = "home";
+  let selectedScene = "catalog";
   let pendingGenerateAfterAuth = false;
   let authSource = "header";
 
   const categories = [
-    { id: "electronics", label: "Электроника", icon: "⚡", hint: "гаджеты, наушники, часы" },
-    { id: "beauty", label: "Косметика", icon: "✨", hint: "духи, кремы, beauty" },
-    { id: "fashion", label: "Одежда", icon: "👟", hint: "обувь, аксессуары" },
-    { id: "home", label: "Дом", icon: "🏠", hint: "техника, кухня, интерьер" },
-    { id: "food", label: "Еда", icon: "🍽", hint: "напитки, упаковка, снеки" },
-    { id: "other", label: "Другое", icon: "◌", hint: "универсальная категория" }
+    { id: "home", label: "Дом", hint: "посуда, декор, интерьер", image: "./assets/categories/home.jpg" },
+    { id: "electronics", label: "Электроника", hint: "гаджеты, наушники, аксессуары", image: "./assets/categories/electronics.jpg" },
+    { id: "beauty", label: "Косметика", hint: "кремы, духи, beauty-товары", image: "./assets/categories/beauty.jpg" },
+    { id: "fashion", label: "Одежда", hint: "обувь, аксессуары, стиль", image: "./assets/categories/fashion.jpg" },
+    { id: "food", label: "Еда", hint: "напитки, снеки, упаковка", image: "./assets/categories/food.jpg" },
+    { id: "other", label: "Другое", hint: "универсальная категория", image: "./assets/categories/other.jpg" }
   ];
 
-  const scenes = {
-    auto: {
-      label: "Авто",
-      subtitle: "CardForge подберёт лучший стиль сам",
-      artClass: "scene-art-auto",
-      icon: "✦",
-      hint: "Сервис сам выберет наиболее подходящую подачу под категорию товара.",
-      categories: ["electronics", "beauty", "fashion", "home", "food", "other"]
+  const concepts = {
+    catalog: {
+      label: "Для каталога",
+      subtitle: "чистый фон, акцент на товаре",
+      hint: "Чистая каталожная подача: товар крупно, понятный фон, минимум отвлекающих деталей."
     },
-    light_studio: {
-      label: "Светлая студия",
-      subtitle: "воздух, мягкий свет, чистый фон",
-      artClass: "scene-art-light",
-      icon: "◐",
-      hint: "Чистая и аккуратная карточка без визуального перегруза.",
-      categories: ["electronics", "beauty", "home", "food", "other"]
+    context: {
+      label: "В окружении",
+      subtitle: "естественная обстановка",
+      hint: "Товар будет помещён в подходящую по назначению реальную сцену."
     },
-    premium_podium: {
-      label: "Премиум-подиум",
-      subtitle: "дорогая рекламная подача",
-      artClass: "scene-art-premium",
-      icon: "◆",
-      hint: "Подиум, объём, акцентный свет и ощущение премиального бренда.",
-      categories: ["electronics", "beauty", "fashion", "other"]
+    composition: {
+      label: "Композиция",
+      subtitle: "реквизит, атмосфера, стиль",
+      hint: "Рекламная композиция с предметами, светом и окружением, которые усиливают образ товара."
     },
-    tech_glow: {
-      label: "Технологичный",
-      subtitle: "неон, глубина, современный tech",
-      artClass: "scene-art-tech",
-      icon: "⚡",
-      hint: "Для электроники, гаджетов и устройств с современной технологичной подачей.",
-      categories: ["electronics", "other"]
+    closeup: {
+      label: "Крупный план",
+      subtitle: "детали, фактуры, материалы",
+      hint: "Товар показывается крупно с акцентом на детали, материал и качество исполнения."
     },
-    lifestyle: {
-      label: "Lifestyle",
-      subtitle: "товар в живой реалистичной сцене",
-      artClass: "scene-art-life",
-      icon: "☀",
-      hint: "Показывает товар в естественной среде и помогает представить его в использовании.",
-      categories: ["fashion", "home", "beauty", "other"]
-    },
-    natural_eco: {
-      label: "Натуральная",
-      subtitle: "эко, вода, камень, природные фактуры",
-      artClass: "scene-art-eco",
-      icon: "❋",
-      hint: "Для косметики, ухода, eco-товаров и натуральной продукции.",
-      categories: ["beauty", "food", "home", "other"]
-    },
-    warm_kitchen: {
-      label: "Тёплая кухня",
-      subtitle: "уютная food / home атмосфера",
-      artClass: "scene-art-kitchen",
-      icon: "⌂",
-      hint: "Для кухни, бытовой техники, посуды и продуктов питания.",
-      categories: ["home", "food", "other"]
-    },
-    sales_infographic: {
+    infographic: {
       label: "Инфографика",
-      subtitle: "акцент на свойствах и выгодах",
-      artClass: "scene-art-info",
-      icon: "T",
-      hint: "Больше чистых зон и блоков для преимуществ товара.",
-      categories: ["electronics", "beauty", "home", "food", "other"]
+      subtitle: "преимущества и характеристики",
+      hint: "Карточка с чистыми зонами для заголовка и преимуществ товара."
     },
     custom: {
       label: "Свой стиль",
-      subtitle: "свободное описание вашей идеи",
-      artClass: "scene-art-custom",
-      icon: "✎",
-      hint: "Опишите собственную сцену в поле «Свободный стиль» ниже — CardForge сохранит требования к качеству и товару.",
-      categories: ["electronics", "beauty", "fashion", "home", "food", "other"]
+      subtitle: "опишите идею своими словами",
+      hint: "Свободный режим: опишите фон, настроение, цвета, свет и композицию своими словами."
     }
   };
 
-  function availableScenes(categoryId) {
-    return Object.entries(scenes)
-      .filter(([, scene]) => scene.categories.includes(categoryId))
-      .map(([id, scene]) => ({ id, ...scene }));
+  const categoryConceptLabels = {
+    home: { context: "В интерьере" },
+    electronics: { context: "В окружении" },
+    beauty: { context: "В использовании" },
+    fashion: { context: "В образе" },
+    food: { context: "В подаче" },
+    other: { context: "В окружении" }
+  };
+
+  function conceptImage(categoryId, conceptId) {
+    if (conceptId === "custom") return "";
+    const fileConcept = conceptId === "context" ? "interior" : conceptId;
+    return `./assets/concepts/${categoryId}-${fileConcept}.jpg`;
   }
 
   function renderCategories() {
@@ -149,14 +116,16 @@
     categories.forEach((item) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `category-chip${item.id === selectedCategory ? " active" : ""}`;
+      button.className = `category-card${item.id === selectedCategory ? " active" : ""}`;
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", item.id === selectedCategory ? "true" : "false");
-      button.innerHTML = `<span class="category-icon">${item.icon}</span><span><b>${item.label}</b><small>${item.hint}</small></span>`;
+      button.innerHTML = `
+        <span class="category-thumb"><img src="${item.image}" alt="${item.label}" loading="lazy"></span>
+        <b>${item.label}</b>
+        <small>${item.hint}</small>
+      `;
       button.addEventListener("click", () => {
         selectedCategory = item.id;
-        const scenesForCategory = availableScenes(selectedCategory);
-        if (!scenesForCategory.some((scene) => scene.id === selectedScene)) selectedScene = "auto";
         renderCategories();
         renderScenes();
         trackEvent("category_select", { category: selectedCategory });
@@ -166,38 +135,46 @@
   }
 
   function renderScenes() {
-    const list = availableScenes(selectedCategory);
     sceneGrid.innerHTML = "";
-    list.forEach((scene) => {
+    Object.entries(concepts).forEach(([id, concept]) => {
+      const label = categoryConceptLabels[selectedCategory]?.[id] || concept.label;
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `scene-card${scene.id === selectedScene ? " active" : ""}`;
+      button.dataset.scene = id;
+      button.className = `scene-card${id === selectedScene ? " active" : ""}`;
       button.setAttribute("role", "radio");
-      button.setAttribute("aria-checked", scene.id === selectedScene ? "true" : "false");
-      button.innerHTML = `
-        <span class="scene-preview ${scene.artClass}"><span class="scene-art-icon">${scene.icon}</span><i></i><em></em></span>
-        <span class="scene-copy"><b>${scene.label}</b><small>${scene.subtitle}</small></span>
-      `;
+      button.setAttribute("aria-checked", id === selectedScene ? "true" : "false");
+      if (id === "custom") {
+        button.innerHTML = `
+          <span class="custom-preview"><span>✦</span></span>
+          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+        `;
+      } else {
+        button.innerHTML = `
+          <span class="scene-preview"><img src="${conceptImage(selectedCategory, id)}" alt="${label}" loading="lazy"></span>
+          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+        `;
+      }
       button.addEventListener("click", () => {
-        selectedScene = scene.id;
+        selectedScene = id;
         renderScenes();
         updateCustomStyleField();
         trackEvent("scene_select", { category: selectedCategory, scene: selectedScene });
       });
       sceneGrid.appendChild(button);
     });
-    sceneHint.textContent = scenes[selectedScene]?.hint || "CardForge сам подставит профессиональный промпт для выбранной сцены.";
+    sceneHint.textContent = concepts[selectedScene]?.hint || "CardForge сам подготовит профессиональное задание для выбранной концепции.";
   }
 
   function updateCustomStyleField() {
-    const label = document.querySelector('label[for="notes"]');
+    const label = document.querySelector("[data-notes-label]");
     const notes = $("notes");
     if (!label || !notes) return;
     const custom = selectedScene === "custom";
-    label.textContent = custom ? "6. Свободный стиль" : "6. Дополнительные пожелания";
+    label.textContent = custom ? "Свободный стиль" : "Дополнительные пожелания";
     notes.placeholder = custom
-      ? "Опишите свой стиль: фон, настроение, цвета, свет, композицию. Например: яркая летняя сцена у бассейна, сочные голубые и жёлтые оттенки, товар крупно в центре."
-      : "Например: фон чуть темнее, больше воздуха слева, заголовок крупнее.";
+      ? "Опишите свою идею: фон, настроение, цвета, свет и композицию. Например: летняя сцена у бассейна, яркие голубые и жёлтые оттенки, товар крупно в центре."
+      : "Например: больше воздуха справа, тёплый свет, крупный заголовок.";
     notes.closest(".field-block")?.classList.toggle("custom-style-active", custom);
   }
 

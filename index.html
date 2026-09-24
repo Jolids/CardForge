@@ -3,335 +3,197 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f5ff" />
-  <meta name="description" content="CardForge AI — продающие карточки товаров для маркетплейсов из одного фото" />
-  <title>CardForge AI — продающие карточки для маркетплейсов</title>
-  <link rel="stylesheet" href="./styles.css?v=80" />
+  <meta name="theme-color" content="#f7f8ff" />
+  <meta name="description" content="CardForge — AI-карточки товаров для маркетплейсов. Выберите категорию, концепцию и получите готовый продающий визуал." />
+  <title>CardForge — AI-карточки товаров для маркетплейсов</title>
+  <link rel="stylesheet" href="./styles.css?v=81" />
 </head>
 <body>
-  <div class="page-glow page-glow-one"></div>
-  <div class="page-glow page-glow-two"></div>
-
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="#top" aria-label="CardForge AI">
-        <span class="brand-mark">✦</span>
-        <span>CardForge <b>AI</b></span>
+      <a class="brand" href="#top" aria-label="CardForge">
+        <span class="brand-cube" aria-hidden="true"><i></i></span>
+        <span class="brand-copy"><b>CardForge</b><small>AI-карточки товаров для маркетплейсов</small></span>
       </a>
 
       <nav class="nav" id="mainNav">
-        <a href="#benefits">Возможности</a>
-        <a href="#how">Как это работает</a>
-        <a href="#examples">Примеры</a>
+        <a class="active" href="#generator">Создать</a>
         <a href="#pricing">Тарифы</a>
+        <a href="#examples">Примеры</a>
+        <a href="#how">Как это работает</a>
         <a href="#faq">FAQ</a>
       </nav>
 
       <div class="account-actions">
-        <button id="loginBtn" class="text-login" type="button">Войти</button>
+        <div class="free-badge"><span>⚡</span><b>1 бесплатная<br>генерация</b></div>
+        <button id="loginBtn" class="login-btn" type="button">Войти <span>→</span></button>
         <div id="userActions" class="user-actions" hidden>
-          <button id="balanceBtn" class="balance-pill" type="button" title="Пополнить баланс">✦ <span id="creditsCount">0</span></button>
-          <button id="buyCreditsBtn" class="header-cta" type="button">Купить кредиты</button>
-          <button id="logoutBtn" class="account-icon-btn" type="button" title="Выйти">↗</button>
+          <button id="balanceBtn" class="balance-pill" type="button">✦ <span id="creditsCount">0</span></button>
+          <button id="buyCreditsBtn" class="buy-btn" type="button">Купить кредиты</button>
+          <button id="logoutBtn" class="logout-btn" type="button" title="Выйти">↗</button>
         </div>
-        <a class="header-cta desktop-create" href="#generator">Создать карточку</a>
         <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Открыть меню">☰</button>
       </div>
     </div>
   </header>
 
   <main id="top">
-    <section class="hero section-shell">
-      <div class="hero-copy">
-        <div class="hero-badge"><span>✦</span> AI для успешных продаж</div>
-        <h1>Соберите карточку <span>для маркетплейсов</span></h1>
-        <p class="hero-lead">Превратите обычное фото товара в красивую, продающую карточку за минуты. Выберите готовую сцену или задайте свой стиль — без дизайнера и сложных программ.</p>
-        <div class="hero-actions">
-          <a class="primary-cta" href="#generator">Создать бесплатно <span>→</span></a>
-          <a class="secondary-cta" href="#examples">Посмотреть примеры</a>
+    <section class="builder-wrap section-shell" id="generator">
+      <div class="builder-card">
+        <div class="builder-intro">
+          <div>
+            <span class="eyebrow">Создайте карточку товара</span>
+            <h1>Один товар — <span>разные продающие сценарии</span></h1>
+          </div>
+          <div id="apiState" class="api-state"><i></i><span>Проверяем сервис…</span></div>
         </div>
-        <div class="hero-trust">
-          <span>✓ Без сложных программ</span>
-          <span>✓ Готовые сцены и стили</span>
-          <span>✓ 1-я генерация после регистрации бесплатно</span>
-        </div>
-      </div>
 
-      <div class="hero-visual" aria-label="Примеры карточек CardForge">
-        <div class="hero-note note-top">Профессиональные карточки<br>за несколько кликов ↙</div>
-        <div class="hero-card-stack">
-          <figure class="product-showcase card-a"><img src="./assets/example-headphones.jpg" alt="Продающая карточка наушников"><figcaption>Электроника</figcaption></figure>
-          <figure class="product-showcase card-b"><img src="./assets/example-perfume.jpg" alt="Продающая карточка парфюма"><figcaption>Beauty</figcaption></figure>
-          <figure class="product-showcase card-c"><img src="./assets/example-watch.jpg" alt="Продающая карточка часов"><figcaption>Гаджеты</figcaption></figure>
-          <figure class="product-showcase card-d"><img src="./assets/example-airfryer.jpg" alt="Продающая карточка аэрогриля"><figcaption>Дом</figcaption></figure>
-        </div>
-        <span class="hero-sparkle sparkle-one">✦</span>
-        <span class="hero-sparkle sparkle-two">✦</span>
+        <section class="builder-step">
+          <div class="step-heading">
+            <span class="step-badge">1</span>
+            <div><h2>Выберите категорию товара</h2><p>Это поможет подобрать подходящие концепции и лучшие результаты</p></div>
+            <span class="hand-note">Выберите категорию,<br>чтобы увидеть примеры концепций ↙</span>
+          </div>
+          <div id="categoryGrid" class="category-grid" role="radiogroup" aria-label="Категория товара"></div>
+        </section>
+
+        <section class="builder-step concepts-step">
+          <div class="step-heading compact-heading">
+            <span class="step-badge">2</span>
+            <div><h2>Выберите концепцию</h2><p>Один товар — разные сценарии. Нажмите на любой вариант, чтобы выбрать его.</p></div>
+          </div>
+          <div id="sceneGrid" class="scene-grid" role="radiogroup" aria-label="Концепция карточки"></div>
+          <p id="sceneHint" class="scene-hint">CardForge сам подготовит профессиональное задание для выбранной концепции.</p>
+        </section>
+
+        <section class="builder-step upload-step">
+          <div class="step-heading compact-heading">
+            <span class="step-badge">3</span>
+            <div><h2>Загрузите свой товар</h2><p>После выбора концепции останется только добавить фото, текст и нажать «Сгенерировать».</p></div>
+          </div>
+
+          <div class="workspace">
+            <form id="generatorForm" class="generator-form">
+              <div class="field-block upload-block">
+                <div class="field-label"><b>Фото товара</b><span>JPG, PNG, WEBP · до 12 МБ</span></div>
+                <label id="dropzone" class="dropzone">
+                  <input id="product" type="file" accept="image/jpeg,image/png,image/webp" required hidden>
+                  <img id="uploadPreview" alt="Предпросмотр товара" hidden>
+                  <div id="uploadEmpty" class="upload-empty">
+                    <span class="upload-icon">⇧</span>
+                    <strong>Перетащите фото или нажмите для выбора</strong>
+                    <small>Лучше использовать чёткое фото, где товар хорошо виден</small>
+                  </div>
+                  <button id="replacePhoto" class="replace-photo" type="button" hidden>Заменить фото</button>
+                </label>
+              </div>
+
+              <div class="form-grid">
+                <label class="field-block"><span class="field-title">Название товара</span><input id="title" class="control" maxlength="100" placeholder="Например: Керамическая кружка"></label>
+                <label class="field-block"><span class="field-title">Формат</span><select id="size" class="control"><option value="portrait">3:4 — маркетплейс</option><option value="square">1:1 — каталог</option><option value="story">9:16 — сторис</option></select></label>
+              </div>
+
+              <label class="field-block"><span class="field-title">Преимущества</span><textarea id="features" class="control textarea" rows="4" maxlength="700" placeholder="300 мл&#10;Можно мыть в посудомоечной машине&#10;Удобная ручка"></textarea></label>
+              <label class="field-block"><span class="field-title" data-notes-label>Дополнительные пожелания</span><textarea id="notes" class="control textarea" rows="4" maxlength="1200" placeholder="Например: больше воздуха справа, тёплый свет, крупный заголовок."></textarea></label>
+
+              <div id="errorBox" class="message error" hidden></div>
+              <button id="generateBtn" class="generate-btn" type="submit"><span>✦</span> Сгенерировать бесплатно</button>
+              <p class="privacy-note">Регистрация появится только при первом запуске генерации. Бесплатная попытка резервируется на сервере непосредственно перед генерацией.</p>
+            </form>
+
+            <aside class="result-card">
+              <div class="result-card-head"><div><span>Результат</span><h3>Готовая карточка</h3></div><span class="result-badge">AI</span></div>
+              <div id="resultStage" class="result-stage portrait">
+                <div id="resultPlaceholder" class="result-placeholder">
+                  <span class="result-spark">✦</span>
+                  <strong>Здесь появится ваша карточка</strong>
+                  <small>Выберите концепцию и загрузите товар</small>
+                </div>
+                <img id="resultImage" alt="Сгенерированная карточка" hidden>
+                <div id="loadingOverlay" class="loading-overlay" hidden><span class="spinner"></span><strong>Создаём карточку…</strong><small>Обычно это занимает 1–2 минуты</small></div>
+              </div>
+              <div class="result-actions"><button id="downloadBtn" type="button" disabled>↓ Скачать</button><button id="againBtn" type="button" disabled>↻ Ещё вариант</button></div>
+              <div id="meta" class="meta"></div>
+              <div id="postGeneratePaywall" class="credit-notice" hidden><div><strong>Бесплатная генерация использована</strong><span>Пополните баланс, чтобы создавать новые варианты.</span></div><button id="paywallBuyBtn" type="button">Купить кредиты</button></div>
+            </aside>
+          </div>
+        </section>
       </div>
     </section>
 
-    <section class="benefit-strip section-shell" id="benefits">
-      <article class="benefit-card">
-        <span class="benefit-icon">⚡</span>
-        <div><h3>Продающий дизайн за минуты</h3><p>Готовая композиция вместо часов в редакторе.</p></div>
-      </article>
-      <article class="benefit-card">
-        <span class="benefit-icon">▣</span>
-        <div><h3>Готовые сцены + свой стиль</h3><p>Выберите готовую подачу или свободно опишите свою идею.</p></div>
-      </article>
-      <article class="benefit-card">
-        <span class="benefit-icon">T</span>
-        <div><h3>Текст и преимущества</h3><p>Добавьте заголовок и выгоды прямо на карточку.</p></div>
-      </article>
-      <article class="benefit-card">
-        <span class="benefit-icon">▤</span>
-        <div><h3>Телефон и компьютер</h3><p>Работает одинаково удобно на любом устройстве.</p></div>
-      </article>
-    </section>
-
-    <section class="how section-shell" id="how">
-      <div class="section-heading centered">
-        <span class="section-kicker">✦ Просто, как 1–2–3</span>
-        <h2>От фото товара — к готовой продаже</h2>
-        <p>CardForge убирает техническую часть. Вы выбираете товар и стиль, сервис делает визуальную работу.</p>
-      </div>
-
-      <div class="steps-flow">
-        <article class="step-card">
-          <span class="step-number">1</span>
-          <div class="step-icon">⇧</div>
-          <h3>Загрузите фото товара</h3>
-          <p>Подойдёт фото с телефона, белого фона или каталога.</p>
-        </article>
-        <div class="step-arrow">→</div>
-        <article class="step-card">
-          <span class="step-number">2</span>
-          <div class="step-icon">▣</div>
-          <h3>Выберите стиль</h3>
-          <p>Студия, премиум, lifestyle, техно, эко — или полностью свой свободный стиль.</p>
-        </article>
-        <div class="step-arrow">→</div>
-        <article class="step-card">
-          <span class="step-number">3</span>
-          <div class="step-icon">✦</div>
-          <h3>Получите карточку</h3>
-          <p>Готовый продающий визуал с товаром, текстом и преимуществами.</p>
-        </article>
-      </div>
-
-      <div class="before-after">
-        <div class="before-after-copy">
-          <span class="section-kicker">Из обычного фото</span>
-          <h3>Покажите товар так, чтобы его хотелось открыть</h3>
-          <p>Хорошая карточка помогает товару выглядеть дороже, понятнее и заметнее в выдаче маркетплейса.</p>
-          <a href="#generator" class="link-arrow">Попробовать бесплатно →</a>
+    <section class="possibilities section-shell" id="how">
+      <div class="possibilities-copy">
+        <span class="pill">✦ ИИ создаёт продающие карточки</span>
+        <h2>Один товар.<br><span>Бесконечные возможности.</span></h2>
+        <p>Загрузите фото, выберите концепцию и получите профессиональную карточку для маркетплейсов — за минуты, без дизайнера и сложных редакторов.</p>
+        <div class="benefits-row">
+          <div><span>⚡</span><b>Быстро</b><small>1–2 минуты</small></div>
+          <div><span>♛</span><b>Профессионально</b><small>Готово для маркетплейсов</small></div>
+          <div><span>♥</span><b>Просто</b><small>Нужна только идея</small></div>
         </div>
-        <div class="before-after-visual">
-          <div class="raw-card"><span>ДО</span><div class="raw-product"></div></div>
-          <div class="transform-arrow">→</div>
-          <figure class="after-card"><img src="./assets/example-perfume.jpg" alt="Пример готовой карточки"><span>ПОСЛЕ</span></figure>
-        </div>
+      </div>
+      <div class="before-after-demo">
+        <div class="before-sample"><img src="./assets/categories/home.jpg" alt="Исходное фото кружки"><span>Ваше фото</span></div>
+        <span class="demo-arrow">→</span>
+        <div class="after-sample"><img src="./assets/concepts/home-interior.jpg" alt="Карточка кружки после применения концепции"><div class="after-overlay"><b>СТИЛЬ<br>В ДЕТАЛЯХ</b><small>Для уютных моментов</small></div></div>
       </div>
     </section>
 
     <section class="examples section-shell" id="examples">
-      <div class="section-heading">
-        <span class="section-kicker">Примеры</span>
-        <h2>Разные товары — одна понятная подача</h2>
-        <p>Сразу видно, как может выглядеть ваш товар после генерации.</p>
-      </div>
-
-      <div class="hero-showcase" aria-label="Примеры карточек товаров">
-        <div class="carousel-head">
-          <div>
-            <strong>Готовые карточки</strong>
-            <span>Листайте — на телефоне можно свайпать</span>
-          </div>
-          <div class="carousel-head-actions">
-            <button class="carousel-button carousel-prev" type="button" aria-label="Предыдущий пример">←</button>
-            <button class="carousel-button carousel-next" type="button" aria-label="Следующий пример">→</button>
-          </div>
-        </div>
-        <div class="hero-carousel" id="heroCarousel">
-          <div class="carousel-track">
-            <figure class="carousel-card"><img src="./assets/example-headphones.jpg" alt="Карточка беспроводных наушников"></figure>
-            <figure class="carousel-card"><img src="./assets/example-perfume.jpg" alt="Карточка парфюма"></figure>
-            <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка смарт-часов"></figure>
-            <figure class="carousel-card"><img src="./assets/example-sneakers.jpg" alt="Карточка кроссовок"></figure>
-            <figure class="carousel-card"><img src="./assets/example-airfryer.jpg" alt="Карточка аэрогриля"></figure>
-          </div>
-        </div>
-        <div class="carousel-dots" id="heroCarouselDots" aria-label="Навигация по примерам"></div>
-      </div>
-    </section>
-
-    <section class="generator-section" id="generator">
-      <div class="section-shell">
-        <div class="section-heading generator-heading centered">
-          <span class="section-kicker">Создать карточку</span>
-          <h2>Соберите карточку для маркетплейсов</h2>
-          <p>Загрузите товар, выберите категорию и сцену. При первой попытке мы предложим быструю регистрацию и сразу продолжим генерацию.</p>
-        </div>
-
-        <div class="workspace">
-          <form id="generatorForm" class="panel form-panel">
-            <div class="panel-head">
-              <div><span class="panel-kicker">Новая генерация</span><h3>Настройки карточки</h3></div>
-              <div id="apiState" class="api-state"><i></i><span>Проверяем сервис…</span></div>
-            </div>
-
-            <div class="field-block">
-              <div class="label-row"><label>1. Фото товара</label><span>JPG, PNG, WEBP · до 12 МБ</span></div>
-              <label id="dropzone" class="dropzone">
-                <input id="product" type="file" accept="image/jpeg,image/png,image/webp" required hidden>
-                <img id="uploadPreview" alt="Предпросмотр товара" hidden>
-                <div id="uploadEmpty" class="upload-empty">
-                  <div class="upload-icon">⇧</div>
-                  <strong>Загрузите фото товара</strong>
-                  <span>Перетащите файл сюда или нажмите для выбора</span>
-                </div>
-                <button id="replacePhoto" class="replace-photo" type="button" hidden>Заменить фото</button>
-              </label>
-            </div>
-
-            <div class="field-block">
-              <div class="label-row"><label>2. Категория товара</label><span>подберём подходящие сцены</span></div>
-              <div id="categoryGrid" class="category-grid" role="radiogroup" aria-label="Категория товара"></div>
-            </div>
-
-            <div class="field-block">
-              <div class="label-row"><label>3. Сцена или свой стиль</label><span>готовые варианты + свободный режим</span></div>
-              <div id="sceneGrid" class="scene-grid" role="radiogroup" aria-label="Готовые сцены"></div>
-              <p id="sceneHint" class="helper-note">CardForge сам подставит профессиональный промпт для выбранной сцены.</p>
-            </div>
-
-            <div class="two-col">
-              <div class="field-block">
-                <label for="title">4. Название товара</label>
-                <input id="title" class="control" maxlength="100" placeholder="Беспроводные наушники">
-              </div>
-              <div class="field-block">
-                <label for="size">Формат</label>
-                <select id="size" class="control">
-                  <option value="portrait">3:4 — маркетплейс</option>
-                  <option value="square">1:1 — каталог</option>
-                  <option value="story">9:16 — сторис</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-block">
-              <div class="label-row"><label for="features">5. Преимущества</label><span>по одному на строку</span></div>
-              <textarea id="features" class="control textarea" rows="4" maxlength="700" placeholder="Чистый и глубокий звук&#10;До 40 часов работы&#10;Шумоподавление"></textarea>
-            </div>
-
-            <div class="field-block">
-              <div class="label-row"><label for="notes">6. Дополнительные пожелания</label><span>необязательно</span></div>
-              <textarea id="notes" class="control textarea" rows="3" maxlength="1200" placeholder="Например: фон чуть темнее, больше воздуха слева, заголовок крупнее."></textarea>
-            </div>
-
-            <div id="errorBox" class="message error" hidden></div>
-            <button id="generateBtn" class="generate" type="submit"><span>✦</span> Сгенерировать бесплатно</button>
-          </form>
-
-          <aside class="panel result-panel">
-            <div class="panel-head">
-              <div><span class="panel-kicker">Результат</span><h3>Готовая карточка</h3></div>
-            </div>
-            <div id="resultStage" class="result-stage portrait">
-              <div id="resultPlaceholder" class="result-placeholder">
-                <div class="result-icon">✦</div>
-                <strong>Результат появится здесь</strong>
-                <span>Загрузите товар и выберите готовую сцену</span>
-              </div>
-              <img id="resultImage" alt="Сгенерированная карточка" hidden>
-              <div id="loadingOverlay" class="loading-overlay" hidden>
-                <div class="spinner"></div>
-                <strong>Создаём карточку…</strong>
-                <span>Обычно это занимает до пары минут</span>
-              </div>
-            </div>
-            <div class="result-actions">
-              <button id="downloadBtn" type="button" disabled>↓ Скачать</button>
-              <button id="againBtn" type="button" class="secondary" disabled>↻ Ещё вариант</button>
-            </div>
-            <div id="meta" class="meta"></div>
-            <div id="postGeneratePaywall" class="credit-notice" hidden>
-              <div><strong>Бесплатная генерация использована</strong><span>Пополните баланс, чтобы создавать новые варианты.</span></div>
-              <button id="paywallBuyBtn" type="button">Купить кредиты</button>
-            </div>
-          </aside>
-        </div>
+      <div class="section-heading"><span class="eyebrow">Примеры</span><h2>Так могут выглядеть ваши товары</h2><p>Разные категории, разные подачи — без необходимости вручную собирать композицию.</p></div>
+      <div class="hero-showcase">
+        <div class="carousel-head"><div><strong>Готовые карточки</strong><span>На телефоне можно свайпать</span></div><div class="carousel-head-actions"><button class="carousel-button carousel-prev" type="button">←</button><button class="carousel-button carousel-next" type="button">→</button></div></div>
+        <div class="hero-carousel" id="heroCarousel"><div class="carousel-track">
+          <figure class="carousel-card"><img src="./assets/example-headphones.jpg" alt="Карточка наушников"></figure>
+          <figure class="carousel-card"><img src="./assets/example-perfume.jpg" alt="Карточка парфюма"></figure>
+          <figure class="carousel-card"><img src="./assets/example-watch.jpg" alt="Карточка часов"></figure>
+          <figure class="carousel-card"><img src="./assets/example-sneakers.jpg" alt="Карточка кроссовок"></figure>
+          <figure class="carousel-card"><img src="./assets/example-airfryer.jpg" alt="Карточка товара для дома"></figure>
+        </div></div>
+        <div class="carousel-dots" id="heroCarouselDots"></div>
       </div>
     </section>
 
     <section class="pricing section-shell" id="pricing">
-      <div class="section-heading centered">
-        <span class="section-kicker">Тарифы</span>
-        <h2>Платите только за готовые генерации</h2>
-        <p>Первая генерация доступна бесплатно после регистрации и используется только при реальном запуске. Дальше выберите удобный пакет.</p>
-      </div>
-      <div id="publicPackageGrid" class="public-package-grid">
-        <div class="pricing-loading">Загружаем тарифы…</div>
-      </div>
-    </section>
-
-    <section class="sales-cta section-shell">
-      <div>
-        <span class="section-kicker light">Красивые товары — больше возможностей</span>
-        <h2>Сделайте товар заметнее уже сегодня</h2>
-        <p>Загрузите одно фото, зарегистрируйтесь при первом запуске и получите первую карточку бесплатно.</p>
-      </div>
-      <a href="#generator" class="white-cta">Создать карточку →</a>
+      <div class="section-heading centered"><span class="eyebrow">Тарифы</span><h2>Платите только за генерации</h2><p>Первая попытка бесплатна после регистрации. Дальше выберите подходящий пакет.</p></div>
+      <div id="publicPackageGrid" class="public-package-grid"><div class="pricing-loading">Загружаем тарифы…</div></div>
     </section>
 
     <section class="faq section-shell" id="faq">
-      <div class="section-heading centered">
-        <span class="section-kicker">FAQ</span>
-        <h2>Частые вопросы</h2>
-      </div>
+      <div class="section-heading centered"><span class="eyebrow">FAQ</span><h2>Частые вопросы</h2></div>
       <div class="faq-grid">
-        <details><summary>Нужно уметь писать промпты?</summary><p>Нет. Вы выбираете категорию и готовую сцену, а CardForge сам собирает подробное задание для генерации.</p></details>
-        <details><summary>Можно использовать фото с телефона?</summary><p>Да. Чем чётче исходное фото и лучше виден товар, тем проще получить качественный результат.</p></details>
-        <details><summary>Можно добавить название и преимущества?</summary><p>Да. В генераторе есть отдельные поля для заголовка и преимуществ товара.</p></details>
-        <details><summary>Работает ли сайт на телефоне?</summary><p>Да. Интерфейс адаптирован под мобильные устройства и компьютер.</p></details>
+        <details><summary>Нужно уметь писать промпты?</summary><p>Нет. Сначала выберите категорию, затем визуально понятную концепцию. Подробное задание для генерации CardForge собирает сам.</p></details>
+        <details><summary>Можно сделать полностью свой стиль?</summary><p>Да. Выберите «Свой стиль» и опишите фон, настроение, цвета и композицию обычными словами.</p></details>
+        <details><summary>Подойдёт фото с телефона?</summary><p>Да. Чем лучше виден товар и чем выше резкость исходного фото, тем стабильнее результат.</p></details>
+        <details><summary>Работает ли на телефоне?</summary><p>Да. Категории и концепции прокручиваются горизонтально, а форма генерации адаптируется под экран смартфона.</p></details>
       </div>
     </section>
   </main>
 
-  <footer class="footer-wrap">
-    <div class="section-shell footer">
-      <a class="brand" href="#top"><span class="brand-mark">✦</span><span>CardForge <b>AI</b></span></a>
-      <span>Карточки товаров, которые хочется открыть</span>
-      <a href="#generator">Создать карточку</a>
-    </div>
-  </footer>
+  <footer class="footer-wrap"><div class="section-shell footer"><a class="brand" href="#top"><span class="brand-cube"><i></i></span><span class="brand-copy"><b>CardForge</b><small>AI-карточки товаров</small></span></a><span>Продающие карточки товаров за несколько кликов</span><a href="#generator">Создать карточку →</a></div></footer>
 
   <div id="authModal" class="modal" hidden>
     <div class="modal-backdrop" data-close-modal="auth"></div>
     <section class="modal-card auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-      <button class="modal-close" type="button" data-close-modal="auth" aria-label="Закрыть">×</button>
-      <span class="section-kicker">Аккаунт CardForge</span>
-      <div class="auth-tabs" role="tablist" aria-label="Авторизация">
-        <button type="button" class="auth-tab active" data-auth-mode="login">Войти</button>
-        <button type="button" class="auth-tab" data-auth-mode="register">Регистрация</button>
-      </div>
+      <button class="modal-close" type="button" data-close-modal="auth">×</button>
+      <span class="eyebrow">Аккаунт CardForge</span>
+      <div class="auth-tabs"><button type="button" class="auth-tab active" data-auth-mode="login">Войти</button><button type="button" class="auth-tab" data-auth-mode="register">Регистрация</button></div>
       <h2 id="authTitle">Войти в CardForge</h2>
-      <p id="authLead">Введите email и пароль. Письма для входа не нужны. Бесплатная генерация резервируется только при первом реальном запуске.</p>
+      <p id="authLead">Введите email и пароль. Бесплатная генерация резервируется только при первом реальном запуске.</p>
       <label class="auth-field"><span>Email</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
       <label class="auth-field"><span>Пароль</span><input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Минимум 8 символов"></label>
       <label id="confirmField" class="auth-field" hidden><span>Повторите пароль</span><input id="authPasswordConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Повторите пароль"></label>
-      <button id="authSubmitBtn" class="generate" type="button">Войти</button>
+      <button id="authSubmitBtn" class="generate-btn" type="button">Войти</button>
       <div id="authMessage" class="auth-message" hidden></div>
-      <small>Новый аккаунт получает одну бесплатную генерацию — она не хранится как кредит и используется только при первом запуске.</small>
+      <small>Пароль хранится на вашем сервере только в виде защищённого хэша.</small>
     </section>
   </div>
 
   <div id="billingModal" class="modal" hidden>
     <div class="modal-backdrop" data-close-modal="billing"></div>
     <section class="modal-card billing-card" role="dialog" aria-modal="true" aria-labelledby="billingTitle">
-      <button class="modal-close" type="button" data-close-modal="billing" aria-label="Закрыть">×</button>
-      <span class="section-kicker">Баланс</span>
+      <button class="modal-close" type="button" data-close-modal="billing">×</button>
+      <span class="eyebrow">Баланс</span>
       <h2 id="billingTitle">Выберите пакет генераций</h2>
       <p class="billing-lead">Оплата проходит на защищённой странице Lava.top. Кредиты начисляются автоматически после подтверждения платежа.</p>
       <div id="packageGrid" class="package-grid"><div class="packages-loading">Загружаем тарифы…</div></div>
@@ -341,8 +203,7 @@
   </div>
 
   <div id="siteToast" class="site-toast" hidden></div>
-
-  <script src="./config.js?v=80"></script>
-  <script src="./app.js?v=80"></script>
+  <script src="./config.js?v=81"></script>
+  <script src="./app.js?v=81"></script>
 </body>
 </html>
