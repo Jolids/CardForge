@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff" />
   <meta name="description" content="CardForge превращает обычное фото товара в красивую продающую карточку для маркетплейсов, рекламы и соцсетей." />
   <title>CardForge — фото товара в продающую карточку</title>
-  <link rel="stylesheet" href="./styles.css?v=870" />
+  <link rel="stylesheet" href="./styles.css?v=871" />
 </head>
 <body>
   <header class="topbar">
@@ -47,15 +47,22 @@
         </div>
       </div>
 
-      <div class="hero-demo" aria-label="Пример до и после">
-        <div class="demo-panel demo-before">
-          <span class="demo-tag">Было</span>
-          <img src="./assets/products/electronics.png" alt="Обычное фото чёрных наушников" />
-        </div>
-        <div class="demo-divider"><span>→</span></div>
-        <div class="demo-panel demo-after">
-          <span class="demo-tag accent">Стало</span>
-          <img src="./assets/concept-results/electronics-custom.webp" alt="Те же наушники в красивой рекламной подаче" />
+      <div class="hero-demo" aria-label="Пример готовой карточки товара">
+        <div class="market-card market-card--hero">
+          <img src="./assets/concept-results/electronics-custom.webp" alt="Готовая рекламная карточка с наушниками" />
+          <div class="market-card-shade"></div>
+          <span class="demo-tag accent">Готовая карточка</span>
+          <div class="market-card-copy">
+            <small>Беспроводные наушники</small>
+            <strong>ТВОЙ РИТМ.<br>ТВОЙ ЗВУК.</strong>
+            <p>Стильная подача товара для маркетплейса и рекламы</p>
+            <div class="market-card-chips"><span>Комфорт каждый день</span><span>Современный дизайн</span></div>
+          </div>
+          <div class="source-inset">
+            <span>Ваше фото</span>
+            <img src="./assets/products/electronics.png" alt="Исходное фото чёрных наушников" />
+          </div>
+          <div class="source-arrow">→</div>
         </div>
       </div>
     </section>
@@ -96,14 +103,16 @@
             <p id="sceneHint" class="scene-hint"></p>
           </div>
 
+          <div class="copy-block">
+            <div class="copy-block-head"><span>Aa</span><div><b>Текст на карточке</b><small>Необязательно. Добавьте только реальные данные о товаре.</small></div></div>
+            <label class="field-block"><span class="field-title">Заголовок</span><input id="title" class="control" maxlength="100" placeholder="Например: Уют в каждой детали" /></label>
+            <label class="field-block"><span class="field-title">Преимущества</span><textarea id="features" class="control textarea compact-textarea" rows="2" maxlength="700" placeholder="Например: Ручная работа · Натуральная керамика · Подарочная упаковка"></textarea></label>
+          </div>
+
           <details class="advanced-fields">
-            <summary>Добавить текст или пожелания <span>+</span></summary>
+            <summary>Формат и дополнительные пожелания <span>+</span></summary>
             <div class="advanced-body">
-              <div class="form-grid">
-                <label class="field-block"><span class="field-title">Название товара</span><input id="title" class="control" maxlength="100" placeholder="Например: Керамическая кружка" /></label>
-                <label class="field-block"><span class="field-title">Формат</span><select id="size" class="control"><option value="portrait">3:4 — маркетплейс</option><option value="square">1:1 — каталог</option><option value="story">9:16 — сторис</option></select></label>
-              </div>
-              <label class="field-block"><span class="field-title">Преимущества</span><textarea id="features" class="control textarea" rows="3" maxlength="700" placeholder="Только реальные преимущества товара"></textarea></label>
+              <label class="field-block"><span class="field-title">Формат</span><select id="size" class="control"><option value="portrait">3:4 — маркетплейс</option><option value="square">1:1 — каталог</option><option value="story">9:16 — сторис</option></select></label>
               <label class="field-block"><span class="field-title" data-notes-label>Дополнительные пожелания</span><textarea id="notes" class="control textarea" rows="3" maxlength="1200" placeholder="Например: тёплый свет, светлый фон, больше воздуха справа"></textarea></label>
             </div>
           </details>
@@ -132,20 +141,46 @@
       <div class="steps">
         <article><span>1</span><div><b>Загрузите фото</b><p>Подойдёт обычная фотография товара с телефона.</p></div></article>
         <article><span>2</span><div><b>Выберите стиль</b><p>Каталог, окружение, композиция, инфографика или свой вариант.</p></div></article>
-        <article><span>3</span><div><b>Получите результат</b><p>Скачайте готовую карточку и используйте её в продаже.</p></div></article>
+        <article><span>3</span><div><b>Добавьте текст и получите результат</b><p>Заголовки и преимущества можно встроить прямо в дизайн карточки.</p></div></article>
       </div>
     </section>
 
     <section class="examples shell" id="examples">
-      <div class="section-heading"><span class="eyebrow">Ещё примеры</span><h2>Просто фото → красивый результат</h2><p>Тот же товар. Меняются только фон, свет и подача.</p></div>
+      <div class="section-heading"><span class="eyebrow">Ещё примеры</span><h2>Из обычного фото — в готовую карточку</h2><p>Товар остаётся тем же. CardForge добавляет сцену, композицию, заголовки и аккуратные плашки.</p></div>
       <div class="examples-grid">
         <figure class="example-card">
-          <div class="example-image"><div><span>Было</span><img src="./assets/products/home.png" alt="Кружка до обработки" /></div><i>→</i><div><span>Стало</span><img src="./assets/concept-results/home-context.webp" alt="Кружка после обработки" /></div></div>
-          <figcaption><b>Товар для дома</b><span>Из обычного фото — в тёплую интерьерную подачу</span></figcaption>
+          <div class="market-card market-card--example">
+            <img src="./assets/concept-results/home-context.webp" alt="Готовая карточка с кружкой" />
+            <div class="market-card-shade"></div>
+            <span class="demo-tag accent">Результат</span>
+            <div class="market-card-copy compact">
+              <small>Керамическая кружка</small>
+              <strong>УЮТ В КАЖДОЙ ДЕТАЛИ</strong>
+              <div class="market-card-chips"><span>Тёплая атмосфера</span><span>Лаконичная подача</span></div>
+            </div>
+            <div class="source-inset small">
+              <span>До</span>
+              <img src="./assets/products/home.png" alt="Исходное фото кружки" />
+            </div>
+          </div>
+          <figcaption><b>Товар для дома</b><span>Фото + заголовок + плашки в одном готовом визуале</span></figcaption>
         </figure>
         <figure class="example-card">
-          <div class="example-image"><div><span>Было</span><img src="./assets/products/other.png" alt="Сумка до обработки" /></div><i>→</i><div><span>Стало</span><img src="./assets/concept-results/other-custom.webp" alt="Сумка после обработки" /></div></div>
-          <figcaption><b>Любой другой товар</b><span>Аккуратный визуал без фотостудии и дизайнера</span></figcaption>
+          <div class="market-card market-card--example">
+            <img src="./assets/concept-results/other-custom.webp" alt="Готовая карточка с сумкой" />
+            <div class="market-card-shade"></div>
+            <span class="demo-tag accent">Результат</span>
+            <div class="market-card-copy compact">
+              <small>Сумка-шоппер</small>
+              <strong>МИНИМАЛИЗМ НА КАЖДЫЙ ДЕНЬ</strong>
+              <div class="market-card-chips"><span>Чистый дизайн</span><span>Городской стиль</span></div>
+            </div>
+            <div class="source-inset small">
+              <span>До</span>
+              <img src="./assets/products/other.png" alt="Исходное фото сумки" />
+            </div>
+          </div>
+          <figcaption><b>Любой другой товар</b><span>Аккуратная рекламная подача без фотостудии и дизайнера</span></figcaption>
         </figure>
       </div>
     </section>
@@ -160,6 +195,7 @@
       <div class="faq-list">
         <details><summary>CardForge меняет сам товар?</summary><p>Нет. Сервис старается сохранить форму, пропорции, цвет, материал, логотип и видимые детали товара. Меняется подача: фон, свет, окружение и композиция.</p></details>
         <details><summary>Нужно писать промпт?</summary><p>Нет. Достаточно выбрать стиль. Пожелания можно добавить только если хочется точнее направить результат.</p></details>
+        <details><summary>Можно добавить текст прямо на карточку?</summary><p>Да. Укажите заголовок и реальные преимущества товара — CardForge встроит их в дизайн и не будет придумывать характеристики за вас.</p></details>
         <details><summary>Подойдёт фото с телефона?</summary><p>Да. Лучше всего работает чёткая фотография, где товар хорошо виден и не перекрыт другими предметами.</p></details>
       </div>
     </section>
