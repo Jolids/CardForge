@@ -831,3 +831,245 @@
   padding:8px;
   background:#fff;
 }
+
+/* v8.6.1 — result-first concept cards: unmistakable BEFORE → AFTER previews */
+.scene-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.scene-card{
+  position:relative;
+  padding:9px 9px 15px;
+  border-radius:22px;
+}
+.scene-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 42px rgba(48,49,92,.11);
+}
+.scene-card.active{
+  border-color:#6e53ff;
+  box-shadow:0 0 0 3px rgba(110,83,255,.11),0 20px 46px rgba(74,56,188,.11);
+}
+.scene-card.active:after{
+  content:"Выбрано";
+  position:absolute;
+  right:16px;
+  bottom:16px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eeeaff;
+  color:#6347dc;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.concept-transform--v861{
+  aspect-ratio:16/10;
+  grid-template-columns:minmax(0,.34fr) 30px minmax(0,.66fr);
+  padding:8px;
+  background:linear-gradient(135deg,#fafaff,#f1f2f8);
+  border:1px solid #eef0f6;
+}
+.concept-transform--v861 .concept-before,
+.concept-transform--v861 .concept-after{
+  border-radius:13px;
+}
+.concept-transform--v861 .concept-before{
+  background:
+    linear-gradient(45deg,#f1f2f6 25%,transparent 25%) 0 0/16px 16px,
+    linear-gradient(-45deg,#f1f2f6 25%,transparent 25%) 0 8px/16px 16px,
+    linear-gradient(45deg,transparent 75%,#f1f2f6 75%) 8px -8px/16px 16px,
+    linear-gradient(-45deg,transparent 75%,#f1f2f6 75%) -8px 0/16px 16px,
+    #fff;
+}
+.concept-transform--v861 .concept-before img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:17px 11px 12px;
+  filter:drop-shadow(0 8px 9px rgba(38,41,66,.10));
+}
+.concept-transform--v861 .concept-after{
+  background:#fff;
+  box-shadow:0 8px 22px rgba(33,37,66,.12);
+}
+.concept-transform--v861 .concept-after img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  padding:0;
+  transform:none;
+}
+.concept-transform--v861 .concept-before small,
+.concept-transform--v861 .concept-after small{
+  left:8px;
+  top:8px;
+  font-size:8px;
+  padding:4px 7px;
+  z-index:8;
+}
+.concept-transform--v861 .concept-after small{
+  background:rgba(94,65,226,.94);
+  color:#fff;
+  box-shadow:0 5px 14px rgba(83,58,196,.22);
+}
+.concept-transform--v861 .concept-arrow{
+  width:32px;
+  height:32px;
+  margin-inline:-1px;
+  font-size:16px;
+  box-shadow:0 7px 18px rgba(93,65,221,.28);
+}
+.scene-copy{
+  padding:12px 10px 0;
+  padding-right:62px;
+}
+.scene-copy b{font-size:15px}
+.scene-copy small{font-size:11.5px;min-height:32px}
+.scene-hint{
+  margin-top:16px;
+  padding:11px 14px;
+  border-radius:13px;
+  background:#f8f7ff;
+  border:1px solid #ece9ff;
+  color:#6f7290;
+}
+
+/* Hero uses real result previews, not abstract placeholders. */
+.visual-card.result-photo{
+  overflow:hidden;
+  background:#fff;
+}
+.visual-card.result-photo img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.visual-card.result-photo .visual-label{
+  z-index:3;
+  background:rgba(255,255,255,.9);
+  color:#373b55;
+  box-shadow:0 5px 16px rgba(34,38,65,.10);
+}
+.visual-card.result-photo:after{
+  content:"Пример результата";
+  position:absolute;
+  z-index:3;
+  left:14px;
+  bottom:13px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(104,71,255,.92);
+  color:#fff;
+  font-size:9px;
+  font-weight:900;
+}
+
+/* Before/after examples below the generator. */
+.before-sample img{
+  object-fit:contain;
+  background:#fff;
+  padding:10px;
+}
+.after-sample{
+  transform:rotate(1.5deg);
+}
+.after-sample>img,
+.after-sample .after-result-img{
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+}
+
+.example-ba{
+  position:absolute;
+  inset:44px 14px 48px;
+  display:grid;
+  grid-template-columns:.38fr 20px .62fr;
+  align-items:stretch;
+  gap:0;
+}
+.example-before,
+.example-after{
+  position:relative;
+  overflow:hidden;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(34,38,68,.10);
+}
+.example-before{
+  display:grid;
+  place-items:center;
+  background:#f7f7fa;
+}
+.example-before img{width:100%;height:100%;object-fit:contain;padding:12px}
+.example-after img{width:100%;height:100%;object-fit:cover}
+.example-before small,
+.example-after small{
+  position:absolute;
+  left:7px;
+  top:7px;
+  z-index:3;
+  padding:4px 6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  color:#666d84;
+  font-size:8px;
+  font-weight:900;
+}
+.example-after small{background:rgba(104,71,255,.93);color:#fff}
+.example-arrow{
+  align-self:center;
+  justify-self:center;
+  z-index:4;
+  width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+  margin-inline:-4px;
+  background:linear-gradient(135deg,#8164ff,#6545e9);color:#fff;font-weight:900;
+  box-shadow:0 6px 16px rgba(93,65,221,.25);
+}
+.carousel-card.before-after-card{min-height:350px;background:linear-gradient(145deg,#fafaff,#f2f3f9)}
+.carousel-card.before-after-card>b{position:absolute;left:18px;bottom:25px;z-index:4}
+.carousel-card.before-after-card>small{position:absolute;right:18px;bottom:26px;z-index:4}
+
+@media(max-width:1120px){
+  .scene-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .scene-grid{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;margin-right:-15px}
+  .scene-card{flex:0 0 300px;scroll-snap-align:start}
+  .concept-transform--v861{aspect-ratio:16/10;grid-template-columns:minmax(0,.34fr) 26px minmax(0,.66fr);padding:6px}
+  .concept-transform--v861 .concept-arrow{width:28px;height:28px;font-size:14px}
+  .concept-transform--v861 .concept-before img{padding:14px 8px 9px}
+  .scene-copy{padding-right:60px}
+  .carousel-card.before-after-card{min-height:330px}
+}
+@media(max-width:420px){
+  .scene-card{flex-basis:280px}
+}
+.carousel-card.before-after-card{
+  position:relative;
+  flex:0 0 390px;
+  min-height:330px;
+  overflow:hidden;
+  padding:0;
+  isolation:isolate;
+}
+.carousel-card.before-after-card>span{
+  position:absolute;
+  z-index:6;
+  top:14px;
+  left:16px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  color:#6545e3;
+  font-size:9px;
+  font-weight:900;
+  box-shadow:0 4px 14px rgba(40,43,72,.08);
+}
+@media(max-width:760px){
+  .carousel-card.before-after-card{flex-basis:84vw;min-height:330px}
+}

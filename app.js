@@ -109,41 +109,23 @@
     return `./assets/products/${categoryId}.png`;
   }
 
-  const previewStageCopy = {
-    catalog: { eyebrow: "Каталог", line: "Чистая подача" },
-    context: { eyebrow: "Сцена", line: "В реальном окружении" },
-    composition: { eyebrow: "Реклама", line: "Постановочная композиция" },
-    closeup: { eyebrow: "Деталь", line: "Фактура и материал" },
-    infographic: { eyebrow: "Инфографика", line: "Только ваши данные" },
-    custom: { eyebrow: "Свой стиль", line: "Ваше направление" },
-  };
+  function conceptResultImage(categoryId, conceptId) {
+    return `./assets/concept-results/${categoryId}-${conceptId}.webp`;
+  }
 
   function sceneArtwork(categoryId, conceptId, label) {
     const source = productImage(categoryId);
-    const copy = previewStageCopy[conceptId] || previewStageCopy.catalog;
+    const result = conceptResultImage(categoryId, conceptId);
 
-    const afterDetails = conceptId === "infographic"
-      ? `<span class="preview-info preview-info--top">Заголовок</span><span class="preview-info preview-info--a">Преимущество</span><span class="preview-info preview-info--b">Преимущество</span>`
-      : conceptId === "composition"
-        ? `<i class="preview-prop preview-prop--one"></i><i class="preview-prop preview-prop--two"></i><i class="preview-plinth"></i>`
-        : conceptId === "context"
-          ? `<i class="preview-room-line"></i><i class="preview-room-surface"></i>`
-          : conceptId === "custom"
-            ? `<i class="preview-blob preview-blob--one"></i><i class="preview-blob preview-blob--two"></i>`
-            : conceptId === "catalog"
-              ? `<i class="preview-shadow"></i>`
-              : ``;
-
-    return `<span class="concept-transform concept-transform--v86">
-      <span class="concept-before"><small>Исходное</small><img src="${source}" alt="Исходный товар" loading="lazy"></span>
-      <span class="concept-arrow">→</span>
-      <span class="concept-after concept-after--${conceptId}" aria-label="${label}: пример подачи того же товара">
-        <small>Как будет</small>
-        <span class="preview-stage preview-stage--${conceptId}">
-          ${afterDetails}
-          <img class="preview-product" src="${source}" alt="Тот же товар в выбранной подаче" loading="lazy">
-          <span class="preview-stage-copy"><b>${copy.eyebrow}</b><em>${copy.line}</em></span>
-        </span>
+    return `<span class="concept-transform concept-transform--v861">
+      <span class="concept-before">
+        <small>Исходник</small>
+        <img src="${source}" alt="Исходное фото товара" loading="lazy">
+      </span>
+      <span class="concept-arrow" aria-hidden="true">→</span>
+      <span class="concept-after concept-after--result" aria-label="${label}: пример результата">
+        <small>Пример результата</small>
+        <img src="${result}" alt="${label}: пример красивой подачи того же товара" loading="lazy">
       </span>
     </span>`;
   }

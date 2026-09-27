@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f7f8ff" />
   <meta name="description" content="CardForge — AI-карточки товаров для маркетплейсов. Выберите категорию, концепцию и получите готовый продающий визуал." />
   <title>CardForge — AI-карточки товаров для маркетплейсов</title>
-  <link rel="stylesheet" href="./styles.css?v=860" />
+  <link rel="stylesheet" href="./styles.css?v=861" />
 </head>
 <body>
   <header class="topbar">
@@ -61,20 +61,18 @@
             <img src="./assets/products/electronics.png" alt="Исходное фото наушников">
           </figure>
           <span class="visual-arrow">→</span>
-          <figure class="visual-card visual-main-card safe-showcase-card safe-showcase-card--catalog">
-            <span class="visual-label">Тот же товар · каталог</span>
-            <i class="safe-showcase-shadow"></i>
-            <img class="safe-showcase-product" src="./assets/products/electronics.png" alt="Те же наушники в каталожной подаче">
-            <strong>Чистая подача</strong>
+          <figure class="visual-card visual-main-card result-photo">
+            <span class="visual-label">Каталог · после</span>
+            <img src="./assets/concept-results/electronics-catalog.webp" alt="Наушники после обработки — каталожная подача">
           </figure>
-          <figure class="visual-card visual-perfume safe-showcase-card safe-showcase-card--composition">
-            <i class="safe-showcase-prop"></i><img class="safe-showcase-product" src="./assets/products/beauty.png" alt="Тот же beauty-товар в рекламной композиции">
+          <figure class="visual-card visual-perfume result-photo">
+            <img src="./assets/concept-results/beauty-composition.webp" alt="Beauty-товар после обработки — рекламная композиция">
           </figure>
-          <figure class="visual-card visual-mug safe-showcase-card safe-showcase-card--context">
-            <i class="safe-showcase-surface"></i><img class="safe-showcase-product" src="./assets/products/home.png" alt="Тот же товар для дома в окружении">
+          <figure class="visual-card visual-mug result-photo">
+            <img src="./assets/concept-results/home-context.webp" alt="Товар для дома после обработки — в интерьере">
           </figure>
-          <figure class="visual-card visual-shoes safe-showcase-card safe-showcase-card--closeup">
-            <img class="safe-showcase-product" src="./assets/products/fashion.png" alt="Тот же товар моды крупным планом">
+          <figure class="visual-card visual-shoes result-photo">
+            <img src="./assets/concept-results/fashion-closeup.webp" alt="Товар моды после обработки — крупный план">
           </figure>
         </div>
       </div>
@@ -109,7 +107,7 @@
         <section class="builder-step concepts-step">
           <div class="step-heading compact-heading">
             <span class="step-badge">2</span>
-            <div><h2>Выберите концепцию</h2><p>Один товар — разные сценарии. Нажмите на любой вариант, чтобы выбрать его.</p></div>
+            <div><h2>Выберите концепцию</h2><p>На каждой карточке слева — исходное фото, справа — пример красивого результата с тем же товаром.</p></div>
           </div>
           <div id="sceneGrid" class="scene-grid" role="radiogroup" aria-label="Концепция карточки"></div>
           <p id="sceneHint" class="scene-hint">CardForge сам подготовит профессиональное задание для выбранной концепции.</p>
@@ -185,8 +183,8 @@
         <div class="before-sample"><img src="./assets/products/home.png" alt="Исходное фото товара для дома"><span>Ваше фото</span></div>
         <span class="demo-arrow">→</span>
         <div class="after-sample">
-          <div class="safe-after-card"><i class="safe-after-surface"></i><img src="./assets/products/home.png" alt="Тот же товар в новой подаче"><b>Тот же товар</b><small>меняется только подача</small></div>
-          <span class="after-caption">Готовая подача</span>
+          <img class="after-result-img" src="./assets/concept-results/home-context.webp" alt="Тот же товар после обработки — интерьерная подача">
+          <span class="after-caption">Пример результата</span>
         </div>
       </div>
     </section>
@@ -196,11 +194,31 @@
       <div class="hero-showcase">
         <div class="carousel-head"><div><strong>Примеры подачи</strong><span>На телефоне можно свайпать</span></div><div class="carousel-head-actions"><button class="carousel-button carousel-prev" type="button">←</button><button class="carousel-button carousel-next" type="button">→</button></div></div>
         <div class="hero-carousel" id="heroCarousel"><div class="carousel-track">
-          <figure class="carousel-card safe-carousel-card safe-carousel-card--catalog"><span>Каталог</span><img src="./assets/products/electronics.png" alt="Те же наушники в каталожной подаче"><b>Чистый фон</b><small>без выдуманных характеристик</small></figure>
-          <figure class="carousel-card safe-carousel-card safe-carousel-card--composition"><span>Композиция</span><i class="carousel-prop carousel-prop--a"></i><i class="carousel-prop carousel-prop--b"></i><img src="./assets/products/beauty.png" alt="Тот же beauty-товар в композиции"><b>Реквизит и свет</b><small>товар остаётся неизменным</small></figure>
-          <figure class="carousel-card safe-carousel-card safe-carousel-card--context"><span>В окружении</span><i class="carousel-surface"></i><img src="./assets/products/home.png" alt="Тот же товар для дома в окружении"><b>Реальная сцена</b><small>сохраняется форма и цвет</small></figure>
-          <figure class="carousel-card safe-carousel-card safe-carousel-card--closeup"><span>Крупный план</span><img src="./assets/products/fashion.png" alt="Тот же товар моды крупным планом"><b>Детали и фактура</b><small>без редизайна товара</small></figure>
-          <figure class="carousel-card safe-carousel-card safe-carousel-card--infographic"><span>Инфографика</span><i class="carousel-info carousel-info--top">Заголовок</i><i class="carousel-info carousel-info--one">Преимущество</i><i class="carousel-info carousel-info--two">Преимущество</i><img src="./assets/products/food.png" alt="Тот же товар в инфографике"><b>Только ваши данные</b><small>ничего не придумываем</small></figure>
+          <figure class="carousel-card before-after-card">
+            <span>Каталог</span>
+            <div class="example-ba"><div class="example-before"><small>До</small><img src="./assets/products/electronics.png" alt="Наушники до обработки"></div><i class="example-arrow">→</i><div class="example-after"><small>После</small><img src="./assets/concept-results/electronics-catalog.webp" alt="Наушники после обработки"></div></div>
+            <b>Чистая коммерческая подача</b><small>тот же товар</small>
+          </figure>
+          <figure class="carousel-card before-after-card">
+            <span>Композиция</span>
+            <div class="example-ba"><div class="example-before"><small>До</small><img src="./assets/products/beauty.png" alt="Beauty-товар до обработки"></div><i class="example-arrow">→</i><div class="example-after"><small>После</small><img src="./assets/concept-results/beauty-composition.webp" alt="Beauty-товар после обработки"></div></div>
+            <b>Реквизит, свет и атмосфера</b><small>без замены товара</small>
+          </figure>
+          <figure class="carousel-card before-after-card">
+            <span>В окружении</span>
+            <div class="example-ba"><div class="example-before"><small>До</small><img src="./assets/products/home.png" alt="Товар для дома до обработки"></div><i class="example-arrow">→</i><div class="example-after"><small>После</small><img src="./assets/concept-results/home-context.webp" alt="Товар для дома после обработки"></div></div>
+            <b>Красивый реальный контекст</b><small>тот же товар</small>
+          </figure>
+          <figure class="carousel-card before-after-card">
+            <span>Крупный план</span>
+            <div class="example-ba"><div class="example-before"><small>До</small><img src="./assets/products/fashion.png" alt="Товар моды до обработки"></div><i class="example-arrow">→</i><div class="example-after"><small>После</small><img src="./assets/concept-results/fashion-closeup.webp" alt="Товар моды после обработки"></div></div>
+            <b>Акцент на деталях и фактуре</b><small>без редизайна</small>
+          </figure>
+          <figure class="carousel-card before-after-card">
+            <span>Инфографика</span>
+            <div class="example-ba"><div class="example-before"><small>До</small><img src="./assets/products/food.png" alt="Товар до обработки"></div><i class="example-arrow">→</i><div class="example-after"><small>После</small><img src="./assets/concept-results/food-infographic.webp" alt="Товар после обработки в инфографике"></div></div>
+            <b>Готовый layout под ваши данные</b><small>без выдуманных свойств</small>
+          </figure>
         </div></div>
         <div class="carousel-dots" id="heroCarouselDots"></div>
       </div>
@@ -255,7 +273,7 @@
   </div>
 
   <div id="siteToast" class="site-toast" hidden></div>
-  <script src="./config.js?v=860"></script>
-  <script src="./app.js?v=860"></script>
+  <script src="./config.js?v=861"></script>
+  <script src="./app.js?v=861"></script>
 </body>
 </html>
