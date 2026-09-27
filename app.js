@@ -113,20 +113,14 @@
     return `./assets/concept-results/${categoryId}-${conceptId}.webp`;
   }
 
-  function sceneArtwork(categoryId, conceptId, label) {
-    const source = productImage(categoryId);
-    const result = conceptResultImage(categoryId, conceptId);
+  function conceptCardImage(categoryId, conceptId) {
+    return `./assets/concept-cards/${categoryId}-${conceptId}.webp`;
+  }
 
-    return `<span class="concept-transform concept-transform--v861">
-      <span class="concept-before">
-        <small>Исходник</small>
-        <img src="${source}" alt="Исходное фото товара" loading="lazy">
-      </span>
-      <span class="concept-arrow" aria-hidden="true">→</span>
-      <span class="concept-after concept-after--result" aria-label="${label}: пример результата">
-        <small>Пример результата</small>
-        <img src="${result}" alt="${label}: пример красивой подачи того же товара" loading="lazy">
-      </span>
+  function sceneArtwork(categoryId, conceptId, label) {
+    const card = conceptCardImage(categoryId, conceptId);
+    return `<span class="concept-board concept-board--v862" aria-label="${label}: исходное фото и пример результата">
+      <img src="${card}" alt="${label}: до и после — пример красивой подачи того же товара" loading="lazy">
     </span>`;
   }
 

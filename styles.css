@@ -1073,3 +1073,44 @@
 @media(max-width:760px){
   .carousel-card.before-after-card{flex-basis:84vw;min-height:330px}
 }
+
+/* v8.6.2 — generated visual examples are used directly as concept cards. */
+.scene-card{
+  padding:8px 8px 15px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#fff,#fcfcff);
+}
+.concept-board--v862{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:768/500;
+  overflow:hidden;
+  border-radius:16px;
+  background:#f5f6fa;
+  box-shadow:0 10px 28px rgba(35,38,70,.08);
+  isolation:isolate;
+}
+.concept-board--v862 img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .28s ease;
+}
+.scene-card:hover .concept-board--v862 img{transform:scale(1.018)}
+.scene-copy{padding:12px 9px 0}
+.scene-copy b{font-size:15px;line-height:1.2}
+.scene-copy small{font-size:11px;line-height:1.4;margin-top:5px;padding-right:54px}
+.scene-card.active .concept-board--v862{
+  box-shadow:0 0 0 2px rgba(110,83,255,.16),0 12px 30px rgba(44,40,88,.11);
+}
+@media(max-width:760px){
+  .scene-card{flex:0 0 310px;padding:7px 7px 14px}
+  .concept-board--v862{border-radius:15px}
+  .scene-copy{padding:11px 8px 0}
+  .scene-copy b{font-size:15px}
+}
+@media(max-width:420px){
+  .scene-card{flex-basis:286px}
+}
