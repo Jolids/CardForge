@@ -117,11 +117,26 @@
     return `./assets/concept-cards/${categoryId}-${conceptId}.webp`;
   }
 
+  const categoryIcons = {
+    home: "⌂",
+    electronics: "◉",
+    beauty: "✦",
+    fashion: "◇",
+    food: "○",
+    other: "□"
+  };
+
+  const conceptIcons = {
+    catalog: "▦",
+    context: "⌂",
+    composition: "✦",
+    closeup: "⌕",
+    infographic: "▥",
+    custom: "◌"
+  };
+
   function sceneArtwork(categoryId, conceptId, label) {
-    const card = conceptCardImage(categoryId, conceptId);
-    return `<span class="concept-board concept-board--v862" aria-label="${label}: исходное фото и пример результата">
-      <img src="${card}" alt="${label}: до и после — пример красивой подачи того же товара" loading="lazy">
-    </span>`;
+    return `<span class="scene-icon" aria-hidden="true">${conceptIcons[conceptId] || "✦"}</span>`;
   }
 
 
@@ -134,9 +149,8 @@
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", item.id === selectedCategory ? "true" : "false");
       button.innerHTML = `
-        <span class="category-thumb"><img src="${item.image}" alt="${item.label}" loading="lazy"></span>
-        <b>${item.label}</b>
-        <small>${item.hint}</small>
+        <span class="category-icon" aria-hidden="true">${categoryIcons[item.id] || "□"}</span>
+        <span><b>${item.label}</b><small>${item.hint}</small></span>
       `;
       button.addEventListener("click", () => {
         selectedCategory = item.id;
