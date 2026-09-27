@@ -57,9 +57,9 @@
   const categories = [
     { id: "home", label: "Дом", hint: "посуда, декор, интерьер", image: "./assets/products/home.png" },
     { id: "electronics", label: "Электроника", hint: "гаджеты, наушники, аксессуары", image: "./assets/products/electronics.png" },
-    { id: "beauty", label: "Красота", hint: "косметика, парфюмерия, уход", image: "./assets/products/beauty.png" },
+    { id: "beauty", label: "Косметика", hint: "кремы, духи, beauty-товары", image: "./assets/products/beauty.png" },
     { id: "fashion", label: "Мода", hint: "одежда, обувь, аксессуары", image: "./assets/products/fashion.png" },
-    { id: "food", label: "Еда и напитки", hint: "продукты, снеки, напитки", image: "./assets/products/food.png" },
+    { id: "food", label: "Еда", hint: "напитки, снеки, упаковка", image: "./assets/products/food.png" },
     { id: "other", label: "Другое", hint: "универсальная категория", image: "./assets/products/other.png" }
   ];
 
@@ -82,17 +82,17 @@
     closeup: {
       label: "Крупный план",
       subtitle: "детали, фактуры, материалы",
-      hint: "Товар показывается крупно с акцентом на детали, материал и качество исполнения."
+      hint: "Тот же товар показывается крупно с акцентом на видимые детали, материал и фактуру."
     },
     infographic: {
       label: "Инфографика",
-      subtitle: "преимущества и характеристики",
-      hint: "Карточка с чистыми зонами для заголовка и преимуществ товара."
+      subtitle: "заголовок и ваши преимущества",
+      hint: "Карточка с чистыми зонами только для заголовка и преимуществ, которые вы сами ввели."
     },
     custom: {
       label: "Свой стиль",
       subtitle: "опишите идею своими словами",
-      hint: "Свободный режим: опишите фон, настроение, цвета, свет и композицию своими словами."
+      hint: "Свободный режим: задайте фон, настроение, свет, композицию и визуальную технику. Сам товар останется тем же."
     }
   };
 
@@ -105,11 +105,49 @@
     other: { context: "В окружении" }
   };
 
-  function conceptImage(categoryId, conceptId) {
-    if (conceptId === "custom") return "";
-    const fileConcept = conceptId === "context" ? "interior" : conceptId;
-    return `./assets/concepts-v2/${categoryId}-${fileConcept}.jpg`;
+  function productImage(categoryId) {
+    return `./assets/products/${categoryId}.png`;
   }
+
+  const previewStageCopy = {
+    catalog: { eyebrow: "Каталог", line: "Чистая подача" },
+    context: { eyebrow: "Сцена", line: "В реальном окружении" },
+    composition: { eyebrow: "Реклама", line: "Постановочная композиция" },
+    closeup: { eyebrow: "Деталь", line: "Фактура и материал" },
+    infographic: { eyebrow: "Инфографика", line: "Только ваши данные" },
+    custom: { eyebrow: "Свой стиль", line: "Ваше направление" },
+  };
+
+  function sceneArtwork(categoryId, conceptId, label) {
+    const source = productImage(categoryId);
+    const copy = previewStageCopy[conceptId] || previewStageCopy.catalog;
+
+    const afterDetails = conceptId === "infographic"
+      ? `<span class="preview-info preview-info--top">Заголовок</span><span class="preview-info preview-info--a">Преимущество</span><span class="preview-info preview-info--b">Преимущество</span>`
+      : conceptId === "composition"
+        ? `<i class="preview-prop preview-prop--one"></i><i class="preview-prop preview-prop--two"></i><i class="preview-plinth"></i>`
+        : conceptId === "context"
+          ? `<i class="preview-room-line"></i><i class="preview-room-surface"></i>`
+          : conceptId === "custom"
+            ? `<i class="preview-blob preview-blob--one"></i><i class="preview-blob preview-blob--two"></i>`
+            : conceptId === "catalog"
+              ? `<i class="preview-shadow"></i>`
+              : ``;
+
+    return `<span class="concept-transform concept-transform--v86">
+      <span class="concept-before"><small>Исходное</small><img src="${source}" alt="Исходный товар" loading="lazy"></span>
+      <span class="concept-arrow">→</span>
+      <span class="concept-after concept-after--${conceptId}" aria-label="${label}: пример подачи того же товара">
+        <small>Как будет</small>
+        <span class="preview-stage preview-stage--${conceptId}">
+          ${afterDetails}
+          <img class="preview-product" src="${source}" alt="Тот же товар в выбранной подаче" loading="lazy">
+          <span class="preview-stage-copy"><b>${copy.eyebrow}</b><em>${copy.line}</em></span>
+        </span>
+      </span>
+    </span>`;
+  }
+
 
   function renderCategories() {
     categoryGrid.innerHTML = "";
@@ -141,20 +179,14 @@
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.scene = id;
+      button.dataset.category = selectedCategory;
       button.className = `scene-card${id === selectedScene ? " active" : ""}`;
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", id === selectedScene ? "true" : "false");
-      if (id === "custom") {
-        button.innerHTML = `
-          <span class="custom-preview"><span>✦</span></span>
-          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
-        `;
-      } else {
-        button.innerHTML = `
-          <span class="scene-preview"><img src="${conceptImage(selectedCategory, id)}" alt="${label}" loading="lazy"></span>
-          <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
-        `;
-      }
+      button.innerHTML = `
+        ${sceneArtwork(selectedCategory, id, label)}
+        <span class="scene-copy"><b>${label}</b><small>${concept.subtitle}</small></span>
+      `;
       button.addEventListener("click", () => {
         selectedScene = id;
         renderScenes();
