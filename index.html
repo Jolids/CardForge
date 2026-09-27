@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff" />
   <meta name="description" content="CardForge превращает обычное фото товара в красивую продающую карточку для маркетплейсов, рекламы и соцсетей." />
   <title>CardForge — фото товара в продающую карточку</title>
-  <link rel="stylesheet" href="./styles.css?v=871" />
+  <link rel="stylesheet" href="./styles.css?v=890" />
 </head>
 <body>
   <header class="topbar">
@@ -48,17 +48,10 @@
       </div>
 
       <div class="hero-demo" aria-label="Пример готовой карточки товара">
-        <div class="market-card market-card--hero">
-          <img src="./assets/concept-results/electronics-custom.webp" alt="Готовая рекламная карточка с наушниками" />
-          <div class="market-card-shade"></div>
+        <div class="showcase-market-card showcase-market-card--hero">
+          <img src="./assets/showcase/headphones-card.png" alt="Готовая продающая карточка с наушниками" />
           <span class="demo-tag accent">Готовая карточка</span>
-          <div class="market-card-copy">
-            <small>Беспроводные наушники</small>
-            <strong>ТВОЙ РИТМ.<br>ТВОЙ ЗВУК.</strong>
-            <p>Стильная подача товара для маркетплейса и рекламы</p>
-            <div class="market-card-chips"><span>Комфорт каждый день</span><span>Современный дизайн</span></div>
-          </div>
-          <div class="source-inset">
+          <div class="source-inset hero-inset">
             <span>Ваше фото</span>
             <img src="./assets/products/electronics.png" alt="Исходное фото чёрных наушников" />
           </div>
@@ -146,41 +139,28 @@
     </section>
 
     <section class="examples shell" id="examples">
-      <div class="section-heading"><span class="eyebrow">Ещё примеры</span><h2>Из обычного фото — в готовую карточку</h2><p>Товар остаётся тем же. CardForge добавляет сцену, композицию, заголовки и аккуратные плашки.</p></div>
-      <div class="examples-grid">
-        <figure class="example-card">
-          <div class="market-card market-card--example">
-            <img src="./assets/concept-results/home-context.webp" alt="Готовая карточка с кружкой" />
-            <div class="market-card-shade"></div>
-            <span class="demo-tag accent">Результат</span>
-            <div class="market-card-copy compact">
-              <small>Керамическая кружка</small>
-              <strong>УЮТ В КАЖДОЙ ДЕТАЛИ</strong>
-              <div class="market-card-chips"><span>Тёплая атмосфера</span><span>Лаконичная подача</span></div>
-            </div>
-            <div class="source-inset small">
-              <span>До</span>
-              <img src="./assets/products/home.png" alt="Исходное фото кружки" />
-            </div>
-          </div>
-          <figcaption><b>Товар для дома</b><span>Фото + заголовок + плашки в одном готовом визуале</span></figcaption>
+      <div class="section-heading">
+        <span class="eyebrow">Примеры результата</span>
+        <h2>Красивые карточки, которые хочется листать</h2>
+        <p>Кликните по карточке или наведите курсор — активная карточка плавно раздвигает остальные. На телефоне можно листать свайпом.</p>
+      </div>
+      <div class="showcase-toolbar">
+        <button id="showcasePrev" class="showcase-nav" type="button" aria-label="Предыдущая карточка">←</button>
+        <div id="showcaseDots" class="showcase-dots" aria-label="Навигация по примерам"></div>
+        <button id="showcaseNext" class="showcase-nav" type="button" aria-label="Следующая карточка">→</button>
+      </div>
+      <div id="showcaseRail" class="showcase-rail" role="list">
+        <figure class="showcase-card active" data-showcase-index="0" role="listitem" tabindex="0" aria-label="Пример карточки с наушниками">
+          <img src="./assets/showcase/headphones-card.png" alt="Пример продающей карточки для наушников" />
+          <figcaption><b>Электроника</b><span>Неоновая premium-подача с продающим заголовком и плашками.</span></figcaption>
         </figure>
-        <figure class="example-card">
-          <div class="market-card market-card--example">
-            <img src="./assets/concept-results/other-custom.webp" alt="Готовая карточка с сумкой" />
-            <div class="market-card-shade"></div>
-            <span class="demo-tag accent">Результат</span>
-            <div class="market-card-copy compact">
-              <small>Сумка-шоппер</small>
-              <strong>МИНИМАЛИЗМ НА КАЖДЫЙ ДЕНЬ</strong>
-              <div class="market-card-chips"><span>Чистый дизайн</span><span>Городской стиль</span></div>
-            </div>
-            <div class="source-inset small">
-              <span>До</span>
-              <img src="./assets/products/other.png" alt="Исходное фото сумки" />
-            </div>
-          </div>
-          <figcaption><b>Любой другой товар</b><span>Аккуратная рекламная подача без фотостудии и дизайнера</span></figcaption>
+        <figure class="showcase-card" data-showcase-index="1" role="listitem" tabindex="0" aria-label="Пример карточки с кружкой">
+          <img src="./assets/showcase/mug-card.png" alt="Пример продающей карточки для кружки" />
+          <figcaption><b>Товары для дома</b><span>Тёплая lifestyle-сцена, уютный оффер и аккуратные преимущества.</span></figcaption>
+        </figure>
+        <figure class="showcase-card" data-showcase-index="2" role="listitem" tabindex="0" aria-label="Пример карточки с сумкой">
+          <img src="./assets/showcase/tote-card.png" alt="Пример продающей карточки для сумки" />
+          <figcaption><b>Другие товары</b><span>Стильная fashion-подача с чистой композицией и модным акцентом.</span></figcaption>
         </figure>
       </div>
     </section>
@@ -233,7 +213,7 @@
   </div>
 
   <div id="siteToast" class="site-toast" hidden></div>
-  <script src="./config.js?v=870"></script>
-  <script src="./app.js?v=870"></script>
+  <script src="./config.js?v=890"></script>
+  <script src="./app.js?v=890"></script>
 </body>
 </html>

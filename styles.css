@@ -140,3 +140,47 @@ button{color:inherit}
 }
 .copy-block{margin-top:18px;padding:16px;border:1px solid #e5ddff;border-radius:16px;background:linear-gradient(135deg,#fbfaff,#f7f4ff);display:grid;gap:12px}
 .copy-block-head{display:flex;align-items:center;gap:10px}.copy-block-head>span{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:11px;background:var(--purple);color:#fff;font-size:12px;font-weight:900}.copy-block-head b,.copy-block-head small{display:block}.copy-block-head b{font-size:14px}.copy-block-head small{margin-top:2px;color:var(--muted);font-size:10px;line-height:1.35}.compact-textarea{min-height:70px}
+
+
+/* v8.9 — interactive showcase cards */
+.hero-demo{display:block;min-height:0;aspect-ratio:4/3;border-radius:30px;overflow:hidden;background:#171426;box-shadow:0 28px 80px rgba(36,22,91,.18)}
+.showcase-market-card{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#110f1f}
+.showcase-market-card>img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
+.showcase-market-card--hero .demo-tag{position:absolute;top:18px;right:18px;left:auto;z-index:4;background:linear-gradient(135deg,var(--purple),var(--purple-2));color:#fff}
+.hero-inset{right:18px;bottom:18px;transform:rotate(2deg)}
+
+.examples{padding-top:70px}
+.showcase-toolbar{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto 22px}
+.showcase-nav{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:20px;font-weight:900;cursor:pointer;transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+.showcase-nav:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(28,24,64,.14);border-color:#d7cef8}
+.showcase-dots{display:flex;align-items:center;gap:8px}
+.showcase-dot{width:10px;height:10px;border-radius:999px;border:0;background:#d8d3ec;cursor:pointer;transition:all .28s ease}
+.showcase-dot.active{width:30px;background:linear-gradient(135deg,var(--purple),var(--purple-2))}
+.showcase-rail{display:flex;gap:18px;align-items:stretch;min-width:0}
+.showcase-card{flex:1 1 0;min-width:0;position:relative;border-radius:28px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 16px 44px rgba(22,18,49,.08);cursor:pointer;transition:flex .5s cubic-bezier(.2,.8,.2,1), transform .38s ease, box-shadow .38s ease, filter .38s ease, border-color .3s ease}
+.showcase-card img{display:block;width:100%;height:100%;min-height:460px;object-fit:cover;object-position:center}
+.showcase-card figcaption{position:absolute;left:18px;right:18px;bottom:18px;display:grid;gap:3px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);box-shadow:0 8px 22px rgba(18,16,32,.12)}
+.showcase-card figcaption b{font-size:15px;color:var(--ink)}
+.showcase-card figcaption span{font-size:12px;line-height:1.45;color:var(--muted)}
+.showcase-card.active,.showcase-card:hover,.showcase-card:focus-visible{flex:1.42 1 0;transform:translateY(-6px);box-shadow:0 24px 54px rgba(36,22,91,.16);border-color:#ddd4fe;outline:none}
+.showcase-rail:hover .showcase-card:not(:hover):not(.active){filter:saturate(.92) brightness(.98)}
+.showcase-card.active::after,.showcase-card:hover::after,.showcase-card:focus-visible::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.56);pointer-events:none}
+
+@media(max-width:980px){
+  .showcase-rail{overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+  .showcase-rail::-webkit-scrollbar{height:0}
+  .showcase-card,.showcase-card.active,.showcase-card:hover{flex:0 0 min(78vw,440px);scroll-snap-align:center;transform:none}
+  .showcase-card img{min-height:420px}
+}
+@media(max-width:720px){
+  .showcase-toolbar{justify-content:space-between}
+  .showcase-rail{gap:14px}
+  .showcase-card,.showcase-card.active,.showcase-card:hover{flex-basis:84vw;border-radius:22px}
+  .showcase-card img{min-height:360px}
+  .showcase-card figcaption{left:12px;right:12px;bottom:12px;padding:12px 14px;border-radius:15px}
+  .showcase-card figcaption b{font-size:14px}.showcase-card figcaption span{font-size:11px}
+}
+@media(max-width:420px){
+  .showcase-card,.showcase-card.active,.showcase-card:hover{flex-basis:88vw}
+  .showcase-card img{min-height:300px}
+}
