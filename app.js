@@ -52,6 +52,7 @@
   let selectedCategory = "home";
   let selectedScene = "catalog";
   let pendingGenerateAfterAuth = false;
+  let pendingGenerationKey = "";
   let authSource = "header";
 
   const categories = [
@@ -527,6 +528,34 @@
     }
   }
 
+  function makeGenerationKey() {
+    return globalThis.crypto?.randomUUID?.() || `gen_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+
+  function clearPendingGenerationKey() {
+    pendingGenerationKey = "";
+  }
+
+  async function fetchGeneration(body, generationKey) {
+    let lastError = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        return await fetch(`${API}/api/generate`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "X-Idempotency-Key": generationKey,
+          },
+          body,
+        });
+      } catch (error) {
+        lastError = error;
+        if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 1200));
+      }
+    }
+    throw lastError || new Error("Failed to fetch");
+  }
+
   async function generate() {
     showError("");
 
@@ -573,26 +602,43 @@
     meta.textContent = "";
 
     try {
-      const res = await fetch(`${API}/api/generate`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${sessionToken}` },
-        body
-      });
+      const generationKey = pendingGenerationKey || makeGenerationKey();
+      pendingGenerationKey = generationKey;
+      const res = await fetchGeneration(body, generationKey);
       const text = await res.text();
       let data;
       try { data = JSON.parse(text); } catch { data = { error: text || `HTTP ${res.status}` }; }
       if (res.status === 401) {
+        clearPendingGenerationKey();
         saveSession(""); account = null; renderAccount(); pendingGenerateAfterAuth = true; openAuth("login", "generation");
-        throw new Error(data.error || "Войдите снова");
+        const authError = new Error(data.error || "Войдите снова");
+        authError.serverResponse = true;
+        throw authError;
       }
       if (res.status === 402 || res.status === 429 || data.code === "NO_CREDITS" || data.code === "TRIAL_LIMIT") {
+        clearPendingGenerationKey();
         await refreshAccount();
         openBilling();
-        throw new Error(data.error || "Бесплатная генерация использована. Для продолжения пополните баланс.");
+        const creditError = new Error(data.error || "Бесплатная генерация использована. Для продолжения пополните баланс.");
+        creditError.serverResponse = true;
+        throw creditError;
       }
-      if (!res.ok) throw new Error(data.error || `Ошибка API ${res.status}`);
-      if (!data.image) throw new Error("Сервис не вернул изображение");
+      if (!res.ok) {
+        if (data.code !== "GENERATION_IN_PROGRESS") clearPendingGenerationKey();
+        const apiError = new Error(data.error || `Ошибка API ${res.status}`);
+        apiError.serverResponse = true;
+        apiError.code = data.code || null;
+        apiError.creditRefunded = Boolean(data.creditRefunded);
+        throw apiError;
+      }
+      if (!data.image) {
+        clearPendingGenerationKey();
+        const emptyError = new Error("Сервис не вернул изображение");
+        emptyError.serverResponse = true;
+        throw emptyError;
+      }
 
+      clearPendingGenerationKey();
       lastImage = data.image;
       resultImage.src = data.image;
       resultImage.hidden = false;
@@ -612,7 +658,14 @@
       if (accountAvailable() === 0) postGeneratePaywall.hidden = false;
     } catch (e) {
       resultPlaceholder.hidden = false;
-      showError(e?.message || "Ошибка генерации");
+      const isNetworkFailure = !e?.serverResponse && (e instanceof TypeError || /failed to fetch|networkerror|network request failed/i.test(String(e?.message || "")));
+      if (isNetworkFailure) {
+        showError("Связь с сервером прервалась. Нажмите «Создать» ещё раз — CardForge продолжит тот же запрос и второй кредит не спишется.");
+      } else if (e?.code === "GENERATION_IN_PROGRESS") {
+        showError("Генерация ещё выполняется. Нажмите ещё раз через несколько секунд — новый кредит не спишется.");
+      } else {
+        showError(e?.message || "Ошибка генерации");
+      }
       await refreshAccount();
     } finally {
       loadingOverlay.hidden = true;
@@ -621,8 +674,16 @@
     }
   }
 
+  [fileInput, $("title"), $("features"), $("notes"), $("size")].filter(Boolean).forEach((el) => {
+    el.addEventListener("change", clearPendingGenerationKey);
+    if (el !== fileInput) el.addEventListener("input", clearPendingGenerationKey);
+  });
+
+  categoryGrid?.addEventListener("click", clearPendingGenerationKey);
+  sceneGrid?.addEventListener("click", clearPendingGenerationKey);
+
   form.addEventListener("submit", (e) => { e.preventDefault(); generate(); });
-  againBtn.addEventListener("click", generate);
+  againBtn.addEventListener("click", () => { clearPendingGenerationKey(); generate(); });
   downloadBtn.addEventListener("click", () => {
     if (!lastImage) return;
     const a = document.createElement("a");
