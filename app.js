@@ -254,11 +254,33 @@
     toastTimer = setTimeout(() => { siteToast.hidden = true; }, 6500);
   }
 
+  let modalScrollY = 0;
+
+  function syncModalPageLock() {
+    const anyOpen = Array.from(document.querySelectorAll(".modal")).some((item) => !item.hidden);
+    const locked = document.body.classList.contains("modal-open");
+    if (anyOpen && !locked) {
+      modalScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      document.documentElement.classList.add("modal-open");
+      document.body.classList.add("modal-open");
+      document.body.style.top = `-${modalScrollY}px`;
+    } else if (!anyOpen && locked) {
+      document.documentElement.classList.remove("modal-open");
+      document.body.classList.remove("modal-open");
+      document.body.style.top = "";
+      window.scrollTo(0, modalScrollY);
+    }
+  }
+
   function setModal(modal, open) {
     if (!modal) return;
     modal.hidden = !open;
-    const anyOpen = Array.from(document.querySelectorAll(".modal")).some((item) => !item.hidden);
-    document.body.style.overflow = anyOpen ? "hidden" : "";
+    if (open) {
+      modal.scrollTop = 0;
+      const card = modal.querySelector(".modal-card");
+      if (card) card.scrollTop = 0;
+    }
+    syncModalPageLock();
   }
 
   function setAuthMode(mode) {
