@@ -33,6 +33,8 @@
   const paywallBuyBtn = $("paywallBuyBtn");
   const authModal = $("authModal");
   const billingModal = $("billingModal");
+  const feedbackModal = $("feedbackModal");
+  const legalModal = $("legalModal");
   const siteToast = $("siteToast");
 
   const categoryGrid = $("categoryGrid");
@@ -215,6 +217,29 @@
     } catch {}
   }
 
+  async function sendPresence() {
+    if (!API || document.hidden) return;
+    try {
+      const headers = { "Content-Type": "application/json" };
+      if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
+      await fetch(`${API}/api/presence`, {
+        method: "POST",
+        headers,
+        keepalive: true,
+        body: JSON.stringify({ visitorId }),
+      });
+    } catch {}
+  }
+
+  function initPresence() {
+    sendPresence();
+    setInterval(() => sendPresence(), 45000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) sendPresence();
+    });
+    window.addEventListener("focus", () => sendPresence());
+  }
+
   function showError(message) {
     errorBox.textContent = message || "";
     errorBox.hidden = !message;
@@ -232,7 +257,8 @@
   function setModal(modal, open) {
     if (!modal) return;
     modal.hidden = !open;
-    document.body.style.overflow = open ? "hidden" : "";
+    const anyOpen = Array.from(document.querySelectorAll(".modal")).some((item) => !item.hidden);
+    document.body.style.overflow = anyOpen ? "hidden" : "";
   }
 
   function setAuthMode(mode) {
@@ -246,6 +272,8 @@
       : "Введите email и пароль. Письма и сторонние сервисы для входа не нужны.";
     $("authSubmitBtn").textContent = authMode === "register" ? "Создать аккаунт" : "Войти";
     $("confirmField").hidden = authMode !== "register";
+    const termsRow = $("authTermsRow");
+    if (termsRow) termsRow.hidden = authMode !== "register";
     $("authMessage").hidden = true;
   }
 
@@ -265,17 +293,52 @@
   }
   function openBilling() {
     if (!sessionToken) return openAuth("login", "billing");
+    const billingCredits = $("billingCredits");
+    if (billingCredits) billingCredits.textContent = String(Number(account?.credits || 0));
+    const terms = $("billingTerms");
+    if (terms) terms.checked = false;
     setModal(billingModal, true);
     trackEvent("billing_open", { source: "balance" });
     loadPackages();
   }
   function closeBilling() { setModal(billingModal, false); }
 
+  function setLegalTab(tab = "terms") {
+    const active = tab === "privacy" ? "privacy" : "terms";
+    document.querySelectorAll("[data-legal-tab]").forEach((button) => button.classList.toggle("active", button.dataset.legalTab === active));
+    if ($("legalTerms")) $("legalTerms").hidden = active !== "terms";
+    if ($("legalPrivacy")) $("legalPrivacy").hidden = active !== "privacy";
+  }
+
+  function openLegal(tab = "terms") {
+    setLegalTab(tab);
+    setModal(legalModal, true);
+    trackEvent("legal_open", { source: tab });
+  }
+  function closeLegal() { setModal(legalModal, false); }
+
+  function openFeedback(source = "footer") {
+    const email = $("feedbackEmail");
+    if (email && !email.value) email.value = account?.email || "";
+    const status = $("feedbackStatus");
+    if (status) status.hidden = true;
+    setModal(feedbackModal, true);
+    trackEvent("feedback_open", { source });
+    setTimeout(() => $("feedbackMessage")?.focus(), 50);
+  }
+  function closeFeedback() { setModal(feedbackModal, false); }
+
   document.querySelectorAll("[data-close-modal='auth']").forEach((el) => el.addEventListener("click", closeAuth));
   document.querySelectorAll("[data-close-modal='billing']").forEach((el) => el.addEventListener("click", closeBilling));
+  document.querySelectorAll("[data-close-modal='feedback']").forEach((el) => el.addEventListener("click", closeFeedback));
+  document.querySelectorAll("[data-close-modal='legal']").forEach((el) => el.addEventListener("click", closeLegal));
   document.querySelectorAll("[data-auth-mode]").forEach((el) => el.addEventListener("click", () => setAuthMode(el.dataset.authMode)));
+  document.querySelectorAll("[data-open-legal]").forEach((el) => el.addEventListener("click", () => openLegal(el.dataset.openLegal || "terms")));
+  document.querySelectorAll("[data-legal-tab]").forEach((el) => el.addEventListener("click", () => setLegalTab(el.dataset.legalTab)));
+  document.querySelectorAll("[data-open-feedback]").forEach((el) => el.addEventListener("click", () => openFeedback("footer")));
+  $("navFeedbackBtn")?.addEventListener("click", () => openFeedback("navigation"));
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeAuth(); closeBilling(); }
+    if (e.key === "Escape") { closeAuth(); closeBilling(); closeFeedback(); closeLegal(); }
   });
 
   function setFile(file) {
@@ -330,6 +393,7 @@
     sessionToken = String(token || "");
     if (sessionToken) localStorage.setItem(TOKEN_KEY, sessionToken);
     else localStorage.removeItem(TOKEN_KEY);
+    sendPresence();
   }
 
   async function apiFetch(path, options = {}, auth = false) {
@@ -362,6 +426,7 @@
       userActions.hidden = false;
       const credits = Number(account.credits || 0);
       creditsCount.textContent = account.freeTrialAvailable && credits === 0 ? "1 бесплатно" : String(credits);
+      if ($("billingCredits")) $("billingCredits").textContent = String(credits);
     } else {
       loginBtn.hidden = false;
       userActions.hidden = true;
@@ -422,6 +487,12 @@
       msg.hidden = false;
       return;
     }
+    if (authMode === "register" && !$("authTerms")?.checked) {
+      msg.textContent = "Для регистрации примите пользовательское соглашение.";
+      msg.className = "auth-message error";
+      msg.hidden = false;
+      return;
+    }
 
     button.disabled = true;
     button.textContent = authMode === "register" ? "Создаём аккаунт…" : "Входим…";
@@ -429,7 +500,7 @@
       const res = await fetch(`${API}/api/auth/${authMode === "register" ? "register" : "login"}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, visitorId })
+        body: JSON.stringify({ email, password, visitorId, termsAccepted: authMode === "register" ? Boolean($("authTerms")?.checked) : undefined })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Ошибка авторизации");
@@ -442,6 +513,7 @@
       setModal(authModal, false);
       $("authPassword").value = "";
       $("authPasswordConfirm").value = "";
+      if ($("authTerms")) $("authTerms").checked = false;
       showToast(authMode === "register" ? "Аккаунт создан. Первая генерация доступна бесплатно." : "Вы вошли в аккаунт.", "good");
       if (resumeGeneration) setTimeout(() => generate(), 120);
     } catch (e) {
@@ -482,6 +554,7 @@
   async function loadPackages() {
     const grid = $("packageGrid");
     const msg = $("billingMessage");
+    if (!grid || !msg) return;
     msg.hidden = true;
     grid.innerHTML = '<div class="packages-loading">Загружаем тарифы…</div>';
     try {
@@ -490,12 +563,19 @@
       if (!res.ok) throw new Error(data.error || "Не удалось загрузить пакеты");
       grid.innerHTML = "";
       for (const pack of data.packages || []) {
+        const perGeneration = Number(pack.amount) / Math.max(1, Number(pack.credits));
         const card = document.createElement("article");
-        card.className = `package-card${pack.popular ? " popular" : ""}`;
-        card.innerHTML = `${pack.popular ? '<span class="package-badge">Популярный</span>' : ''}<h3>${pack.title}</h3><div class="package-credits">${pack.credits} <small>генераций</small></div><div class="package-price">${money(pack.amount, pack.currency)}</div><button type="button">Выбрать</button>`;
+        card.className = `package-card package-card-v2${pack.popular ? " popular" : ""}`;
+        card.innerHTML = `${pack.popular ? '<span class="package-badge">Популярный</span>' : ''}
+          <div class="package-top"><div><small>Пакет</small><h3>${pack.title}</h3></div><span class="package-icon">✦</span></div>
+          <div class="package-credits"><strong>${pack.credits}</strong><span>генераций</span></div>
+          <p class="package-description">${pack.description || "Для создания карточек товаров"}</p>
+          <div class="package-price-row"><div class="package-price">${money(pack.amount, pack.currency)}</div><small>≈ ${money(perGeneration, pack.currency)} / карточка</small></div>
+          <button class="package-buy" type="button">Выбрать пакет <span>→</span></button>`;
         card.querySelector("button").addEventListener("click", (e) => buyPackage(pack.id, e.currentTarget));
         grid.appendChild(card);
       }
+      syncBillingButtons();
     } catch (e) {
       grid.innerHTML = '<div class="packages-loading">Не удалось загрузить тарифы.</div>';
       msg.textContent = e?.message || "Ошибка тарифов";
@@ -504,16 +584,32 @@
     }
   }
 
+  function syncBillingButtons() {
+    const accepted = Boolean($("billingTerms")?.checked);
+    document.querySelectorAll(".package-buy").forEach((button) => {
+      button.disabled = !accepted;
+      button.title = accepted ? "" : "Сначала примите пользовательское соглашение";
+    });
+  }
+
+  $("billingTerms")?.addEventListener("change", syncBillingButtons);
+
   async function buyPackage(packageId, button) {
     const msg = $("billingMessage");
     msg.hidden = true;
+    if (!$("billingTerms")?.checked) {
+      msg.textContent = "Подтвердите согласие с пользовательским соглашением перед оплатой.";
+      msg.className = "auth-message error";
+      msg.hidden = false;
+      return;
+    }
     button.disabled = true;
     button.textContent = "Создаём оплату…";
     try {
       const res = await apiFetch("/api/billing/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId })
+        body: JSON.stringify({ packageId, termsAccepted: true })
       }, true);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Не удалось создать оплату");
@@ -521,12 +617,62 @@
       location.href = data.paymentUrl;
     } catch (e) {
       button.disabled = false;
-      button.textContent = "Выбрать";
+      button.innerHTML = 'Выбрать пакет <span>→</span>';
       msg.textContent = e?.message || "Ошибка оплаты";
       msg.className = "auth-message error";
       msg.hidden = false;
     }
   }
+
+  async function submitFeedback() {
+    const button = $("feedbackSubmit");
+    const status = $("feedbackStatus");
+    const topic = $("feedbackTopic")?.value || "other";
+    const email = $("feedbackEmail")?.value.trim() || "";
+    const message = $("feedbackMessage")?.value.trim() || "";
+    status.hidden = true;
+    if (message.length < 10) {
+      status.textContent = "Напишите чуть подробнее — минимум 10 символов.";
+      status.className = "auth-message error";
+      status.hidden = false;
+      return;
+    }
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+      status.textContent = "Проверьте email для ответа.";
+      status.className = "auth-message error";
+      status.hidden = false;
+      return;
+    }
+    button.disabled = true;
+    button.textContent = "Отправляем…";
+    try {
+      const res = await apiFetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic, email, message, visitorId })
+      }, Boolean(sessionToken));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Не удалось отправить сообщение");
+      $("feedbackMessage").value = "";
+      $("feedbackCount").textContent = "0";
+      status.textContent = "Спасибо! Сообщение сохранено и появилось в нашей панели поддержки.";
+      status.className = "auth-message success";
+      status.hidden = false;
+      showToast("Сообщение отправлено. Спасибо!", "good");
+    } catch (e) {
+      status.textContent = e?.message || "Не удалось отправить сообщение";
+      status.className = "auth-message error";
+      status.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = "Отправить сообщение";
+    }
+  }
+
+  $("feedbackSubmit")?.addEventListener("click", submitFeedback);
+  $("feedbackMessage")?.addEventListener("input", (event) => {
+    if ($("feedbackCount")) $("feedbackCount").textContent = String(event.target.value.length);
+  });
 
   function makeGenerationKey() {
     return globalThis.crypto?.randomUUID?.() || `gen_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -855,6 +1001,7 @@
     updateGenerateButton();
     initHeroCarousel();
     initMobileMenu();
+    initPresence();
     initShowcaseCards();
     trackEvent("page_view", { source: "landing" });
     const generator = document.getElementById("generator");
